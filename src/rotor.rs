@@ -1,23 +1,31 @@
-use crate::consts::NUM_LETTERS;
 use crate::char_mapping::CharMapping;
+use crate::consts::NUM_LETTERS;
 use crate::util::letter_to_index;
 
 #[derive(Debug, Clone)]
 pub struct Rotor {
+    /// Name of the rotor
+    pub name: String,
+
     /// Array of mappings between chars
     ///
     /// Each index maps to another index
     char_map: CharMapping,
+
+    /// Array of reverse mappings to speed up reverse lookup
     reverse_char_map: CharMapping,
+
+    /// Current position of the rotor
     pos: usize,
 
     /// Positions at which turning over this rotor turns over
     /// the next rotor
-    turnover_pos: Vec<usize>
+    turnover_pos: Vec<usize>,
 }
 
 impl Rotor {
     pub fn new(
+        name: String,
         mappings: [(char, char); NUM_LETTERS],
         turnover_pos: Vec<char>,
         pos: usize,
@@ -31,16 +39,24 @@ impl Rotor {
         let char_map = CharMapping::from(mappings);
         let reverse_char_map = CharMapping::from_reverse_of(&char_map);
 
-        Rotor { char_map, reverse_char_map, turnover_pos, pos }
+        Rotor {
+            name,
+            char_map,
+            reverse_char_map,
+            turnover_pos,
+            pos,
+        }
     }
 
     /// Convert a character sending it forwards through the system
     pub fn char_in(&self, c: usize) -> usize {
-        self.char_map[(c + self.pos) % NUM_LETTERS]
+        let idx = (c + self.pos) % NUM_LETTERS;
+        (self.char_map[idx] + NUM_LETTERS - self.pos) % NUM_LETTERS
     }
 
     pub fn char_out(&self, c: usize) -> usize {
-        self.reverse_char_map[(c + self.pos) % NUM_LETTERS]
+        let idx = (c + self.pos) % NUM_LETTERS;
+        (self.reverse_char_map[idx] + NUM_LETTERS - self.pos) % NUM_LETTERS
     }
 
     /// Turn over this rotor
@@ -52,20 +68,23 @@ impl Rotor {
 
 #[cfg(test)]
 mod tests {
-    use crate::{data::get_rotor_config, consts::NUM_LETTERS};
+    use crate::{consts::NUM_LETTERS, data::get_rotor_config};
 
     use super::Rotor;
 
     #[test]
     fn inputs_are_symmetric() {
         let r = Rotor::new(
+            "I".to_owned(),
             get_rotor_config("I").1,
             get_rotor_config("I").0,
-            0,
+            1,
         );
 
         for i in 0..NUM_LETTERS {
-            assert_eq!(r.char_out(r.char_in(i)), i);
+            let encoded = r.char_in(i);
+            let decoded = r.char_out(encoded);
+            assert_eq!(decoded, i);
         }
     }
 }

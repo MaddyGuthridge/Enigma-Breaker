@@ -19,7 +19,7 @@ impl EnigmaMachine {
                 .iter()
                 .map(|(id, start)| {
                     let (turnover_pos, mappings) = get_rotor_config(id);
-                    Rotor::new(mappings, turnover_pos, *start)
+                    Rotor::new(id.clone(), mappings, turnover_pos, *start)
                 })
                 .collect(),
             reflector: Reflector::new(get_reflector_config(reflector_id)),
