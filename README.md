@@ -7,6 +7,8 @@ sources. I don't have the energy to debug it, but it's still neat, I think.
 
 ## Usage
 
+The program behaves similarly to `cat`.
+
 `cargo run -- <reflector ID> -r [rotor IDs] -p [plug maps]`
 
 For example, to use reflector `B`, with rotors `III`, `IV` and `I`, you can run
