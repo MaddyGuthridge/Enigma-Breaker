@@ -2,7 +2,7 @@ use crate::consts::NUM_LETTERS;
 use crate::char_mapping::CharMapping;
 use crate::util::letter_to_index;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Rotor {
     /// Array of mappings between chars
     ///
@@ -47,5 +47,25 @@ impl Rotor {
     pub fn tick(&mut self) -> bool {
         self.pos = (self.pos + 1) % NUM_LETTERS;
         self.turnover_pos.contains(&self.pos)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{data::get_rotor_config, consts::NUM_LETTERS};
+
+    use super::Rotor;
+
+    #[test]
+    fn inputs_are_symmetric() {
+        let r = Rotor::new(
+            get_rotor_config("I").1,
+            get_rotor_config("I").0,
+            0,
+        );
+
+        for i in 0..NUM_LETTERS {
+            assert_eq!(r.char_out(r.char_in(i)), i);
+        }
     }
 }

@@ -4,7 +4,7 @@ use crate::{consts::NUM_LETTERS, util::{letter_to_index, index_to_letter}};
 
 pub const INVALID_MAPPING: usize = usize::MAX;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CharMapping([usize; NUM_LETTERS]);
 
 impl Deref for CharMapping {
