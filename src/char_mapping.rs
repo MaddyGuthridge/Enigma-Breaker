@@ -1,6 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{consts::NUM_LETTERS, util::letter_to_index};
+use crate::{consts::NUM_LETTERS, util::{letter_to_index, index_to_letter}};
 
 pub const INVALID_MAPPING: usize = usize::MAX;
 
@@ -44,6 +44,15 @@ fn add_to_mapping(
     mapping[letter_to_index(from).0] = letter_to_index(to).0;
 }
 
+fn ensure_valid(mapping: &[usize; NUM_LETTERS]) {
+    for (i, c) in mapping.iter().enumerate() {
+        if *c == INVALID_MAPPING {
+            let from = index_to_letter(i, false);
+            panic!("Missing mapping for {from:?}!");
+        }
+    }
+}
+
 impl From<[(char, char); NUM_LETTERS]> for CharMapping {
     fn from(
         chars: [(char, char); NUM_LETTERS],
@@ -53,6 +62,8 @@ impl From<[(char, char); NUM_LETTERS]> for CharMapping {
         for (from, to) in chars {
             add_to_mapping(&mut mapping, from, to)
         }
+
+        ensure_valid(&mapping);
 
         CharMapping(mapping)
     }
@@ -70,6 +81,8 @@ impl From<Vec<(char, char)>> for CharMapping {
             add_to_mapping(&mut mapping, from, to)
         }
 
+        ensure_valid(&mapping);
+
         CharMapping(mapping)
     }
 }
@@ -81,6 +94,8 @@ impl CharMapping {
         for (i, c) in map.iter().enumerate() {
             new[*c] = i;
         }
+
+        ensure_valid(&new);
 
         new
     }
