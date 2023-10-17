@@ -42,7 +42,7 @@ pub fn get_rotor_config(rotor_id: &str) -> (Vec<char>, [(char, char); NUM_LETTER
             ('i', 'f'),
             ('j', 'b'),
             ('k', 'd'),
-            ('l', 'b'),
+            ('l', 'k'),
             ('m', 'o'),
             ('n', 't'),
             ('o', 'y'),
