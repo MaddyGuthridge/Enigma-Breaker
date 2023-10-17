@@ -9,6 +9,7 @@ mod machine;
 
 use clap::Parser;
 use machine::EnigmaMachine;
+use util::letter_to_index;
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
@@ -41,7 +42,9 @@ fn main() {
             match r.split_once(':') {
                 None => (r, 0),
                 Some((id, start)) => {
-                    let parsed = start.parse::<usize>().unwrap();
+                    let parsed = letter_to_index(
+                        start.chars().next().unwrap()
+                    ).0;
                     (id.to_owned(), parsed)
                 },
             }
