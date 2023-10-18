@@ -1,0 +1,11 @@
+{
+  "reflector_id": "B",
+  "rotors": [
+    ["I", "A"],
+    ["II", "B"],
+    ["III", "C"]
+  ],
+  "plugs": [],
+  "input": "AEFAEJXXBNXYJTY",
+  "expect": "CONGRATULATIONS"
+}

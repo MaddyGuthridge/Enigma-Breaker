@@ -1,0 +1,11 @@
+{
+  "reflector_id": "B",
+  "rotors": [
+    ["I", "A"],
+    ["II", "D"],
+    ["III", "S"]
+  ],
+  "plugs": [],
+  "input": "Rzfog fyhpl",
+  "expect": "Turns three"
+}

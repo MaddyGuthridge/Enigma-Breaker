@@ -21,6 +21,9 @@ pub struct Rotor {
     /// Positions at which turning over this rotor turns over
     /// the next rotor
     turnover_pos: Vec<usize>,
+
+    /// Whether this rotor is capable of performing a double-stepping operation
+    can_double_step: bool
 }
 
 impl Rotor {
@@ -28,6 +31,7 @@ impl Rotor {
         name: String,
         mappings: [(char, char); NUM_LETTERS],
         turnover_pos: Vec<char>,
+        can_double_step: bool,
         pos: usize,
     ) -> Rotor {
         let turnover_pos = turnover_pos
@@ -44,6 +48,7 @@ impl Rotor {
             char_map,
             reverse_char_map,
             turnover_pos,
+            can_double_step,
             pos,
         }
     }
@@ -60,9 +65,31 @@ impl Rotor {
     }
 
     /// Turn over this rotor
-    pub fn tick(&mut self) -> bool {
+    ///
+    /// Returns whether the next one should be a regular step (`true`), which
+    /// happens if this rotor reached its turnover position or a potential
+    /// double step (`false`), which happens otherwise
+    pub fn step(&mut self) -> bool {
         self.pos = (self.pos + 1) % NUM_LETTERS;
         self.turnover_pos.contains(&self.pos)
+    }
+
+    /// Perform a potential double step.
+    ///
+    /// The rotor is stepped, only if it is configured to be a double-stepping
+    /// rotor (ie not the first or last), and if it is currently at a turnover
+    /// position
+    ///
+    /// Returns whether the next one should be a regular step (`true`), which
+    /// happens if this rotor stepped, or a double step (`false`), which
+    /// happens otherwise
+    pub fn double_step(&mut self) -> bool {
+        if self.can_double_step && self.turnover_pos.contains(&(self.pos + 1)) {
+            self.pos = (self.pos + 1) % NUM_LETTERS;
+            true
+        } else {
+            false
+        }
     }
 }
 
@@ -78,6 +105,7 @@ mod tests {
             "I".to_owned(),
             get_rotor_config("I").1,
             get_rotor_config("I").0,
+            false,
             1,
         );
 

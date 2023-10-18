@@ -9,7 +9,6 @@ mod machine;
 
 use clap::Parser;
 use machine::EnigmaMachine;
-use util::letter_to_index;
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
@@ -36,15 +35,13 @@ fn main() {
     let args = Cli::parse();
 
     // Parse the rotor options
-    let rotors: Vec<(String, usize)> = args.rotor_ids
+    let rotors: Vec<(String, char)> = args.rotor_ids
         .into_iter()
         .map(|r| {
             match r.split_once(':') {
-                None => (r, 0),
+                None => (r, 'A'),
                 Some((id, start)) => {
-                    let parsed = letter_to_index(
-                        start.chars().next().unwrap()
-                    ).0;
+                    let parsed = start.chars().next().unwrap();
                     (id.to_owned(), parsed)
                 },
             }

@@ -20,8 +20,8 @@
                 }
             },
             "console": "integratedTerminal",
-            "args": ["B", "-r", "I:K", "II:E", "III:T"],
-            "stdio": ["${workspaceFolder}/tests/1.in"],
+            "args": ["B", "-r", "I:A", "II:D", "III:S"],
+            "stdio": ["${workspaceFolder}/tests/double_step.in"],
             "cwd": "${workspaceFolder}"
         },
         {

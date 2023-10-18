@@ -1,0 +1,11 @@
+{
+  "reflector_id": "B",
+  "rotors": [
+    ["II", "J"],
+    ["III", "J"],
+    ["I", "J"]
+  ],
+  "plugs": [],
+  "input": "XBEBNXBVUP",
+  "expect": "PANOPTICON"
+}
