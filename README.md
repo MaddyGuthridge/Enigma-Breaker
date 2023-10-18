@@ -1,11 +1,6 @@
 # Enigma
 
-A somewhat-broken implementation of an Enigma machine, built in Rust.
-
-It is able to encode and decode its own inputs, but fails inputs from other
-sources. I don't have the energy to debug it, but it's still neat, I think.
-
-[Video demonstration](https://youtu.be/B0Z_EsA1bEo)
+An implementation of an Enigma machine, built in Rust.
 
 ## Usage
 
