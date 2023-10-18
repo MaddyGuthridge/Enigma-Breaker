@@ -19,7 +19,9 @@
                     "kind": "bin"
                 }
             },
-            "args": ["B", "-r", "II:J", "III:J", "I:J"],
+            "console": "integratedTerminal",
+            "args": ["B", "-r", "I:K", "II:E", "III:T"],
+            "stdio": ["${workspaceFolder}/tests/1.in"],
             "cwd": "${workspaceFolder}"
         },
         {

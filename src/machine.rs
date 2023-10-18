@@ -27,7 +27,7 @@ impl EnigmaMachine {
     }
 
     fn tick(&mut self) {
-        for rotor in &mut self.rotors {
+        for rotor in self.rotors.iter_mut().rev() {
             if !rotor.tick() {
                 break;
             }
@@ -38,27 +38,27 @@ impl EnigmaMachine {
         if c.is_ascii_alphabetic() {
             let (mut i, capital) = letter_to_index(c);
 
+            // First, tick the rotors
+            self.tick();
+
             // Through plug board
             i = self.plug_board.map_char(i);
 
             // Then each rotor forwards
-            for rotor in &self.rotors {
-                i = rotor.char_in(i);
+            for rotor in self.rotors.iter().rev() {
+                i = rotor.char_out(i);
             }
 
             // Then through the reflector
             i = self.reflector.reflect(i);
 
             // Then back through the rotors (in reverse this time)
-            for rotor in self.rotors.iter().rev() {
-                i = rotor.char_out(i);
+            for rotor in &self.rotors {
+                i = rotor.char_in(i);
             }
 
             // Then finally back through the plug board
             i = self.plug_board.map_char(i);
-
-            // Now tick the rotors
-            self.tick();
 
             index_to_letter(i, capital)
         } else {
