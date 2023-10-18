@@ -2,6 +2,8 @@
 
 An implementation of an Enigma machine, built in Rust.
 
+[Video demonstration](https://youtu.be/tPsBQVQb0ZE)
+
 ## Usage
 
 The program behaves similarly to `cat`.
