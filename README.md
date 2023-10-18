@@ -24,8 +24,15 @@ For more details, use `cargo run -- --help`
 ```txt
 $ cargo run -q -- B -r V:X I:C II:B
 Hello, world! This is my super cool Enigma machine, programmed in Rust!
-Vrqsp, zhjfx! Sash tu fu mbkje rnlj Voompj jzksoqh, vkezntgglg ai Xgdf!
+Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
 $ cargo run -q -- B -r V:X I:C II:B
-Vfohs, qggtk! Vbsu nv ih wirih bvve Nkhcay ymfnelm, rehsdkhquv cg Owls!
+Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
 Hello, world! This is my super cool Enigma machine, programmed in Rust!
 ```
+
+## References
+
+* [Franklin Heath - Paper Enigma](http://wiki.franklinheath.co.uk/index.php/Enigma/Paper_Enigma) for the excellent overview on how Enigma machines work
+* [Ilmari Karonen - Stack Exchange](https://crypto.stackexchange.com/a/71395/112016) for the explanation of double stepping
+* [Wikipedia - Enigma Rotor Details](https://en.wikipedia.org/wiki/Enigma_rotor_details) for details on the specific rotor configurations
+* [101 Computing - Enigma Machine Emulator](https://www.101computing.net/enigma-machine-emulator/) which I used to validate my work somewhat
