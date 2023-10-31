@@ -1,17 +1,17 @@
-mod rotor;
-mod reflector;
-mod consts;
 mod char_mapping;
+mod consts;
 mod data;
 mod plug_board;
+mod reflector;
+mod rotor;
 
 pub use data::{ReflectorId, RotorId};
 pub use plug_board::PlugBoard;
 pub use reflector::Reflector;
 pub use rotor::Rotor;
 
-use data::{get_reflector_config, get_rotor_config};
 use crate::util::{index_to_letter, letter_to_index};
+use data::{get_reflector_config, get_rotor_config};
 
 #[derive(Debug)]
 pub struct EnigmaMachine {
@@ -43,7 +43,7 @@ impl EnigmaMachine {
                     )
                 })
                 .collect(),
-            reflector: Reflector::new(get_reflector_config(reflector_id.into())),
+            reflector: Reflector::new(get_reflector_config(reflector_id)),
         }
     }
 
@@ -116,7 +116,7 @@ mod tests {
 
     use serde::Deserialize;
 
-    use super::{EnigmaMachine, RotorId, ReflectorId};
+    use super::{EnigmaMachine, RotorId};
 
     #[derive(Debug, Deserialize)]
     struct TestCase {
@@ -143,14 +143,14 @@ mod tests {
     fn run_test_case(path: &str) {
         let test_data = read_test_case(path);
 
-        let mut machine =
-            EnigmaMachine::new(
-                &test_data.plugs,
-                &test_data.rotors
-                    .into_iter()
-                    .map(|(id, start)| (RotorId::from(&id), start))
-                    .collect::<Vec<(RotorId, char)>>(),
-                ReflectorId::from(&test_data.reflector_id),
+        let mut machine = EnigmaMachine::new(
+            &test_data.plugs,
+            &test_data
+                .rotors
+                .into_iter()
+                .map(|(id, start)| (id.as_str().try_into().unwrap(), start))
+                .collect::<Vec<(RotorId, char)>>(),
+            test_data.reflector_id.as_str().try_into().unwrap(),
         );
 
         let encoded = machine.consume(&test_data.input);
@@ -173,4 +173,3 @@ mod tests {
         run_test_case("tests/richard.json");
     }
 }
-

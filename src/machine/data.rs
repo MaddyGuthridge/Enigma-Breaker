@@ -1,6 +1,7 @@
 use super::consts::NUM_LETTERS;
+use strum::{EnumString, IntoStaticStr, Display};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, EnumString, IntoStaticStr, Display)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum RotorId {
     I,
@@ -8,38 +9,6 @@ pub enum RotorId {
     III,
     IV,
     V,
-}
-
-impl ToString for RotorId {
-    fn to_string(&self) -> String {
-        match self {
-            RotorId::I => "I".to_owned(),
-            RotorId::II => "II".to_owned(),
-            RotorId::III => "III".to_owned(),
-            RotorId::IV => "IV".to_owned(),
-            RotorId::V => "V".to_owned(),
-        }
-    }
-}
-
-impl From<&str> for RotorId {
-    fn from(value: &str) -> Self {
-        match value {
-            "I" => RotorId::I,
-            "II" => RotorId::II,
-            "III" => RotorId::III,
-            "IV" => RotorId::IV,
-            "V" => RotorId::V,
-            _ => panic!("Unknown rotor id {value:?}")
-        }
-    }
-}
-
-impl From<&String> for RotorId {
-    fn from(value: &String) -> Self {
-        let str_value: &str = value.as_str();
-        str_value.into()
-    }
 }
 
 pub fn get_rotor_config(rotor_id: RotorId) -> (Vec<char>, [(char, char); NUM_LETTERS]) {
@@ -187,29 +156,11 @@ pub fn get_rotor_config(rotor_id: RotorId) -> (Vec<char>, [(char, char); NUM_LET
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, EnumString, IntoStaticStr, Display)]
 pub enum ReflectorId {
     A,
     B,
     C,
-}
-
-impl From<&str> for ReflectorId {
-    fn from(value: &str) -> Self {
-        match value {
-            "A" => ReflectorId::A,
-            "B" => ReflectorId::B,
-            "C" => ReflectorId::C,
-            _ => panic!("Unknown reflector id {value:?}")
-        }
-    }
-}
-
-impl From<&String> for ReflectorId {
-    fn from(value: &String) -> Self {
-        let str_value: &str = value.as_str();
-        str_value.into()
-    }
 }
 
 

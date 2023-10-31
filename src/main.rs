@@ -1,8 +1,8 @@
-mod util;
 mod machine;
+mod util;
 
 use clap::Parser;
-use machine::{EnigmaMachine, RotorId, ReflectorId};
+use machine::{EnigmaMachine, RotorId};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
@@ -22,28 +22,37 @@ struct Cli {
     ///
     /// Each connection should specify two letters to swap, for example `AB`.
     #[clap(short, long, value_parser, num_args = 0.., value_delimiter = ' ')]
-    plug_map: Vec<String>
+    plug_map: Vec<String>,
 }
 
 fn main() {
     let args = Cli::parse();
 
     // Parse the rotor options
-    let rotors: Vec<(RotorId, char)> = args.rotor_ids
+    let rotors: Vec<(RotorId, char)> = args
+        .rotor_ids
         .into_iter()
-        .map(|r| {
-            match r.split_once(':') {
-                None => (RotorId::from(&r), 'A'),
-                Some((id, start)) => {
-                    let parsed = start.chars().next().unwrap();
-                    (RotorId::from(id), parsed)
-                },
+        .map(|r| match r.split_once(':') {
+            None => (
+                r.as_str()
+                    .try_into()
+                    .unwrap_or_else(|_| panic!("Invalid rotor ID {r:?}")),
+                'A',
+            ),
+            Some((id, start)) => {
+                let parsed = start.chars().next().unwrap();
+                (
+                    id.try_into()
+                        .unwrap_or_else(|_| panic!("Invalid rotor ID {r:?}")),
+                    parsed,
+                )
             }
         })
         .collect();
 
     // And also parse the plug maps
-    let plugs: Vec<(char, char)> = args.plug_map
+    let plugs: Vec<(char, char)> = args
+        .plug_map
         .into_iter()
         .map(|c| {
             assert_eq!(c.len(), 2);
@@ -55,7 +64,10 @@ fn main() {
     let mut machine = EnigmaMachine::new(
         &plugs,
         &rotors,
-        ReflectorId::from(&args.reflector_id),
+        args.reflector_id
+            .as_str()
+            .try_into()
+            .expect("Invalid reflector ID"),
     );
 
     for line in std::io::stdin().lines() {
