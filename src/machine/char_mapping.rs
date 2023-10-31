@@ -1,6 +1,9 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{consts::NUM_LETTERS, util::{letter_to_index, index_to_letter}};
+use crate::util::{letter_to_index, index_to_letter};
+
+use super::consts::NUM_LETTERS;
+
 
 pub const INVALID_MAPPING: usize = usize::MAX;
 

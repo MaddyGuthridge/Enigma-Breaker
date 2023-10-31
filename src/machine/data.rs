@@ -1,4 +1,4 @@
-use crate::consts::NUM_LETTERS;
+use super::consts::NUM_LETTERS;
 
 #[derive(Debug, Clone, Copy)]
 #[allow(clippy::upper_case_acronyms)]

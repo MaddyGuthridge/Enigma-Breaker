@@ -1,5 +1,5 @@
-use crate::char_mapping::CharMapping;
-use crate::consts::NUM_LETTERS;
+use super::char_mapping::CharMapping;
+use super::consts::NUM_LETTERS;
 use crate::util::letter_to_index;
 
 #[derive(Debug, Clone)]
@@ -23,7 +23,7 @@ pub struct Rotor {
     turnover_pos: Vec<usize>,
 
     /// Whether this rotor is capable of performing a double-stepping operation
-    can_double_step: bool
+    can_double_step: bool,
 }
 
 impl Rotor {
@@ -95,7 +95,10 @@ impl Rotor {
 
 #[cfg(test)]
 mod tests {
-    use crate::{consts::NUM_LETTERS, data::{get_rotor_config, RotorId}};
+    use super::super::{
+        consts::NUM_LETTERS,
+        data::{get_rotor_config, RotorId},
+    };
 
     use super::Rotor;
 

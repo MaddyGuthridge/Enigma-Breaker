@@ -1,4 +1,4 @@
-use crate::{char_mapping::CharMapping, consts::NUM_LETTERS};
+use super::{char_mapping::CharMapping, consts::NUM_LETTERS};
 
 #[derive(Debug)]
 pub struct Reflector {

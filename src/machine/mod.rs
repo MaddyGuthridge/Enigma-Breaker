@@ -1,10 +1,15 @@
-use crate::{
-    data::{get_reflector_config, get_rotor_config},
-    plug_board::PlugBoard,
-    reflector::Reflector,
-    rotor::Rotor,
-    util::{index_to_letter, letter_to_index},
-};
+mod rotor;
+mod reflector;
+mod consts;
+mod char_mapping;
+mod data;
+mod plug_board;
+
+use data::{get_reflector_config, get_rotor_config};
+pub use plug_board::PlugBoard;
+pub use reflector::Reflector;
+pub use rotor::Rotor;
+use crate::util::{index_to_letter, letter_to_index};
 
 #[derive(Debug)]
 pub struct EnigmaMachine {
@@ -144,3 +149,4 @@ mod tests {
         run_test_case("tests/richard.json");
     }
 }
+

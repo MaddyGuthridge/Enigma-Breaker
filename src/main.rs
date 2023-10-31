@@ -1,10 +1,4 @@
-mod rotor;
-mod reflector;
-mod consts;
-mod char_mapping;
-mod data;
 mod util;
-mod plug_board;
 mod machine;
 
 use clap::Parser;
