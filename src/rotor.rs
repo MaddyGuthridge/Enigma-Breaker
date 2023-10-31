@@ -95,7 +95,7 @@ impl Rotor {
 
 #[cfg(test)]
 mod tests {
-    use crate::{consts::NUM_LETTERS, data::get_rotor_config};
+    use crate::{consts::NUM_LETTERS, data::{get_rotor_config, RotorId}};
 
     use super::Rotor;
 
@@ -103,8 +103,8 @@ mod tests {
     fn inputs_are_symmetric() {
         let r = Rotor::new(
             "I".to_owned(),
-            get_rotor_config("I").1,
-            get_rotor_config("I").0,
+            get_rotor_config(RotorId::I).1,
+            get_rotor_config(RotorId::I).0,
             false,
             1,
         );

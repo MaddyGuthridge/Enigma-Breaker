@@ -1,4 +1,10 @@
-use crate::{data::{get_rotor_config, get_reflector_config}, plug_board::PlugBoard, reflector::Reflector, rotor::Rotor, util::{letter_to_index, index_to_letter}};
+use crate::{
+    data::{get_reflector_config, get_rotor_config},
+    plug_board::PlugBoard,
+    reflector::Reflector,
+    rotor::Rotor,
+    util::{index_to_letter, letter_to_index},
+};
 
 #[derive(Debug)]
 pub struct EnigmaMachine {
@@ -20,7 +26,7 @@ impl EnigmaMachine {
                 .iter()
                 .enumerate()
                 .map(|(i, (id, start))| {
-                    let (turnover_pos, mappings) = get_rotor_config(id);
+                    let (turnover_pos, mappings) = get_rotor_config(id.into());
                     Rotor::new(
                         id.clone(),
                         mappings,
@@ -30,7 +36,7 @@ impl EnigmaMachine {
                     )
                 })
                 .collect(),
-            reflector: Reflector::new(get_reflector_config(reflector_id)),
+            reflector: Reflector::new(get_reflector_config(reflector_id.into())),
         }
     }
 
@@ -78,13 +84,9 @@ impl EnigmaMachine {
     }
 
     pub fn consume(&mut self, input: String) -> String {
-        input
-            .chars()
-            .map(|c| self.encode_char(c))
-            .collect()
+        input.chars().map(|c| self.encode_char(c)).collect()
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -113,19 +115,14 @@ mod tests {
     }
 
     fn read_test_case(path: &str) -> TestCase {
-        serde_json::from_str(
-            &fs::read_to_string(path).unwrap()
-        ).unwrap()
+        serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap()
     }
 
     fn run_test_case(path: &str) {
         let test_data = read_test_case(path);
 
-        let mut machine = EnigmaMachine::new(
-            &test_data.plugs,
-            &test_data.rotors,
-            &test_data.reflector_id,
-        );
+        let mut machine =
+            EnigmaMachine::new(&test_data.plugs, &test_data.rotors, &test_data.reflector_id);
 
         let encoded = machine.consume(test_data.input);
 

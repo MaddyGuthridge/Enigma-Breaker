@@ -1,8 +1,38 @@
 use crate::consts::NUM_LETTERS;
 
-pub fn get_rotor_config(rotor_id: &str) -> (Vec<char>, [(char, char); NUM_LETTERS]) {
+#[derive(Debug, Clone, Copy)]
+#[allow(clippy::upper_case_acronyms)]
+pub enum RotorId {
+    I,
+    II,
+    III,
+    IV,
+    V,
+}
+
+impl From<&str> for RotorId {
+    fn from(value: &str) -> Self {
+        match value {
+            "I" => RotorId::I,
+            "II" => RotorId::II,
+            "III" => RotorId::III,
+            "IV" => RotorId::IV,
+            "V" => RotorId::V,
+            _ => panic!("Unknown rotor id {value:?}")
+        }
+    }
+}
+
+impl From<&String> for RotorId {
+    fn from(value: &String) -> Self {
+        let str_value: &str = value.as_str();
+        str_value.into()
+    }
+}
+
+pub fn get_rotor_config(rotor_id: RotorId) -> (Vec<char>, [(char, char); NUM_LETTERS]) {
     match rotor_id {
-        "I" => (vec!['R'], [
+        RotorId::I => (vec!['R'], [
             ('a', 'u'),
             ('b', 'w'),
             ('c', 'y'),
@@ -30,7 +60,7 @@ pub fn get_rotor_config(rotor_id: &str) -> (Vec<char>, [(char, char); NUM_LETTER
             ('y', 'o'),
             ('z', 'j'),
         ]),
-        "II" => (vec!['F'], [
+        RotorId::II => (vec!['F'], [
             ('a', 'a'),
             ('b', 'j'),
             ('c', 'p'),
@@ -58,7 +88,7 @@ pub fn get_rotor_config(rotor_id: &str) -> (Vec<char>, [(char, char); NUM_LETTER
             ('y', 'v'),
             ('z', 's'),
         ]),
-        "III" => (vec!['W'], [
+        RotorId::III => (vec!['W'], [
             ('a', 't'),
             ('b', 'a'),
             ('c', 'g'),
@@ -86,7 +116,7 @@ pub fn get_rotor_config(rotor_id: &str) -> (Vec<char>, [(char, char); NUM_LETTER
             ('y', 'o'),
             ('z', 'm'),
         ]),
-        "IV" => (vec!['K'], [
+        RotorId::IV => (vec!['K'], [
             ('a', 'h'),
             ('b', 'z'),
             ('c', 'w'),
@@ -114,7 +144,7 @@ pub fn get_rotor_config(rotor_id: &str) -> (Vec<char>, [(char, char); NUM_LETTER
             ('y', 'i'),
             ('z', 'f'),
         ]),
-        "V" => (vec!['A'], [
+        RotorId::V => (vec!['A'], [
             ('a', 'q'),
             ('b', 'c'),
             ('c', 'y'),
@@ -142,16 +172,41 @@ pub fn get_rotor_config(rotor_id: &str) -> (Vec<char>, [(char, char); NUM_LETTER
             ('y', 'h'),
             ('z', 'b'),
         ]),
-        _ => panic!("Unknown rotor id {rotor_id:?}")
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum ReflectorId {
+    A,
+    B,
+    C,
+}
+
+impl From<&str> for ReflectorId {
+    fn from(value: &str) -> Self {
+        match value {
+            "A" => ReflectorId::A,
+            "B" => ReflectorId::B,
+            "C" => ReflectorId::C,
+            _ => panic!("Unknown reflector id {value:?}")
+        }
+    }
+}
+
+impl From<&String> for ReflectorId {
+    fn from(value: &String) -> Self {
+        let str_value: &str = value.as_str();
+        str_value.into()
     }
 }
 
 
 pub fn get_reflector_config(
-    reflector_id: &str
+    reflector_id: ReflectorId
 ) -> [(char, char); NUM_LETTERS / 2] {
     match reflector_id {
-        "B" => [
+        ReflectorId::A => todo!(),
+        ReflectorId::B => [
             ('a', 'y'),
             ('b', 'r'),
             ('c', 'u'),
@@ -166,7 +221,7 @@ pub fn get_reflector_config(
             ('t', 'z'),
             ('v', 'w'),
         ],
-        "C" => [
+        ReflectorId::C => [
             ('a', 'f'),
             ('b', 'v'),
             ('c', 'p'),
@@ -181,6 +236,5 @@ pub fn get_reflector_config(
             ('q', 't'),
             ('s', 'u'),
         ],
-        _ => panic!("Unknown reflector id {reflector_id:?}")
     }
 }
