@@ -10,6 +10,18 @@ pub enum RotorId {
     V,
 }
 
+impl ToString for RotorId {
+    fn to_string(&self) -> String {
+        match self {
+            RotorId::I => "I".to_owned(),
+            RotorId::II => "II".to_owned(),
+            RotorId::III => "III".to_owned(),
+            RotorId::IV => "IV".to_owned(),
+            RotorId::V => "V".to_owned(),
+        }
+    }
+}
+
 impl From<&str> for RotorId {
     fn from(value: &str) -> Self {
         match value {

@@ -2,7 +2,7 @@ mod util;
 mod machine;
 
 use clap::Parser;
-use machine::EnigmaMachine;
+use machine::{EnigmaMachine, RotorId, ReflectorId};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
@@ -29,14 +29,14 @@ fn main() {
     let args = Cli::parse();
 
     // Parse the rotor options
-    let rotors: Vec<(String, char)> = args.rotor_ids
+    let rotors: Vec<(RotorId, char)> = args.rotor_ids
         .into_iter()
         .map(|r| {
             match r.split_once(':') {
-                None => (r, 'A'),
+                None => (RotorId::from(&r), 'A'),
                 Some((id, start)) => {
                     let parsed = start.chars().next().unwrap();
-                    (id.to_owned(), parsed)
+                    (RotorId::from(id), parsed)
                 },
             }
         })
@@ -55,10 +55,10 @@ fn main() {
     let mut machine = EnigmaMachine::new(
         &plugs,
         &rotors,
-        &args.reflector_id,
+        ReflectorId::from(&args.reflector_id),
     );
 
     for line in std::io::stdin().lines() {
-        println!("{}", machine.consume(line.unwrap()));
+        println!("{}", machine.consume(&line.unwrap()));
     }
 }

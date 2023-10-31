@@ -5,10 +5,12 @@ mod char_mapping;
 mod data;
 mod plug_board;
 
-use data::{get_reflector_config, get_rotor_config};
+pub use data::{ReflectorId, RotorId};
 pub use plug_board::PlugBoard;
 pub use reflector::Reflector;
 pub use rotor::Rotor;
+
+use data::{get_reflector_config, get_rotor_config};
 use crate::util::{index_to_letter, letter_to_index};
 
 #[derive(Debug)]
@@ -21,8 +23,8 @@ pub struct EnigmaMachine {
 impl EnigmaMachine {
     pub fn new(
         plug_board_config: &Vec<(char, char)>,
-        rotor_ids: &[(String, char)],
-        reflector_id: &str,
+        rotor_ids: &[(RotorId, char)],
+        reflector_id: ReflectorId,
     ) -> EnigmaMachine {
         let double_step_rotors = 1..rotor_ids.len() - 1;
         EnigmaMachine {
@@ -31,9 +33,9 @@ impl EnigmaMachine {
                 .iter()
                 .enumerate()
                 .map(|(i, (id, start))| {
-                    let (turnover_pos, mappings) = get_rotor_config(id.into());
+                    let (turnover_pos, mappings) = get_rotor_config(*id);
                     Rotor::new(
-                        id.clone(),
+                        id.to_string(),
                         mappings,
                         turnover_pos,
                         double_step_rotors.contains(&i),
@@ -88,8 +90,23 @@ impl EnigmaMachine {
         }
     }
 
-    pub fn consume(&mut self, input: String) -> String {
+    pub fn jump_forwards(&mut self, distance: usize) {
+        for _ in 0..distance {
+            self.tick();
+        }
+    }
+
+    pub fn consume(&mut self, input: &str) -> String {
         input.chars().map(|c| self.encode_char(c)).collect()
+    }
+
+    pub fn check_encode(&mut self, input: &str, expected_output: &str) -> bool {
+        for (c_in, c_exp) in input.chars().zip(expected_output.chars()) {
+            if self.encode_char(c_in) != c_exp {
+                return false;
+            }
+        }
+        true
     }
 }
 
@@ -99,7 +116,7 @@ mod tests {
 
     use serde::Deserialize;
 
-    use super::EnigmaMachine;
+    use super::{EnigmaMachine, RotorId, ReflectorId};
 
     #[derive(Debug, Deserialize)]
     struct TestCase {
@@ -127,9 +144,16 @@ mod tests {
         let test_data = read_test_case(path);
 
         let mut machine =
-            EnigmaMachine::new(&test_data.plugs, &test_data.rotors, &test_data.reflector_id);
+            EnigmaMachine::new(
+                &test_data.plugs,
+                &test_data.rotors
+                    .into_iter()
+                    .map(|(id, start)| (RotorId::from(&id), start))
+                    .collect::<Vec<(RotorId, char)>>(),
+                ReflectorId::from(&test_data.reflector_id),
+        );
 
-        let encoded = machine.consume(test_data.input);
+        let encoded = machine.consume(&test_data.input);
 
         assert_eq!(encoded, test_data.expect);
     }
