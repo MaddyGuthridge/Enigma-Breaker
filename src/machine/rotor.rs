@@ -152,7 +152,7 @@ mod tests {
     /// turnover
     #[test]
     fn step_unstep_turnover() {
-        let mut r = RotorId::I.make_rotor(Letter::R, false);
+        let mut r = RotorId::I.make_rotor(Letter::Q, false);
 
         // It should have triggered the next one to step
         assert!(r.step());
@@ -163,7 +163,7 @@ mod tests {
 
     #[test]
     fn double_step_double_unstep() {
-        let mut r = RotorId::I.make_rotor(Letter::R, true);
+        let mut r = RotorId::I.make_rotor(Letter::Q, true);
 
         // The next one should double step
         assert!(r.double_step());

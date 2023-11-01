@@ -65,7 +65,6 @@ impl From<[(Letter, Letter); Letter::COUNT]> for CharMapping {
 
         for (from, to) in chars {
             mapping[from] = to;
-            mapping[to] = from;
         }
 
         mapping
@@ -94,7 +93,6 @@ impl From<Vec<(Letter, Letter)>> for CharMapping {
 
         for (from, to) in chars {
             mapping[from] = to;
-            mapping[to] = from;
         }
 
         mapping
@@ -121,6 +119,5 @@ impl CharMapping {
         //     panic!("Cannot map char {from:?} to {to:?}, {from:?} already maps to {existing:?}",)
         // }
         self[c_a] = c_b;
-        self[c_b] = c_a;
     }
 }
