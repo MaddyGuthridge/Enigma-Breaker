@@ -40,7 +40,7 @@ impl EnigmaMachine {
         }
     }
 
-    fn tick(&mut self) {
+    fn step(&mut self) {
         let mut do_single_step = true;
         for rotor in self.rotors.iter_mut().rev() {
             if do_single_step {
@@ -51,13 +51,13 @@ impl EnigmaMachine {
         }
     }
 
-    fn untick(&mut self) {
+    fn unstep(&mut self) {
         let mut do_single_step = true;
         for rotor in self.rotors.iter_mut().rev() {
             if do_single_step {
-                do_single_step = rotor.step();
+                do_single_step = rotor.unstep();
             } else {
-                do_single_step = rotor.double_step();
+                do_single_step = rotor.double_unstep();
             }
         }
     }
@@ -67,7 +67,7 @@ impl EnigmaMachine {
             let (mut i, capital) = letter_to_index(c);
 
             // First, tick the rotors
-            self.tick();
+            self.step();
 
             // Through plug board
             i = self.plug_board.map_char(i);
@@ -96,7 +96,13 @@ impl EnigmaMachine {
 
     pub fn jump_forwards(&mut self, distance: usize) {
         for _ in 0..distance {
-            self.tick();
+            self.step();
+        }
+    }
+
+    pub fn jump_backwards(&mut self, distance: usize) {
+        for _ in 0..distance {
+            self.unstep();
         }
     }
 
@@ -175,5 +181,28 @@ mod tests {
     #[test]
     fn richards_favourite_word() {
         run_test_case("tests/richard.json");
+    }
+
+    #[test]
+    fn test_jumps() {
+        let test_data = read_test_case("tests/simple.json");
+
+        let mut machine = EnigmaMachine::new(
+            &test_data.plugs,
+            &test_data
+                .rotors
+                .into_iter()
+                .map(|(id, start)| (id.as_str().try_into().unwrap(), start))
+                .collect::<Vec<(RotorId, char)>>(),
+            test_data.reflector_id.as_str().try_into().unwrap(),
+        );
+
+        // Jump forwards then backwards
+        machine.jump_forwards(1000);
+        machine.jump_backwards(1000);
+
+        let encoded = machine.consume(&test_data.input);
+
+        assert_eq!(encoded, test_data.expect);
     }
 }
