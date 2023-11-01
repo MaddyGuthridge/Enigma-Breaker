@@ -1,9 +1,9 @@
 use super::{Rotor, Reflector};
 use crate::{consts::NUM_LETTERS, letter::Letter};
-use strum::{EnumString, IntoStaticStr, Display};
+use strum::{EnumString, IntoStaticStr, Display, EnumIter};
 
 /// ID representing a rotor with a specific configuration
-#[derive(Debug, Clone, Copy, EnumString, IntoStaticStr, Display)]
+#[derive(Debug, Clone, Copy, EnumIter, EnumString, IntoStaticStr, Display)]
 #[allow(clippy::upper_case_acronyms)]
 pub enum RotorId {
     /// Rotor I, turns over at R
