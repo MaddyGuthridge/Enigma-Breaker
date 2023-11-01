@@ -180,7 +180,7 @@ impl RotorId {
 }
 
 
-#[derive(Debug, Clone, Copy, EnumString, IntoStaticStr, Display)]
+#[derive(Debug, Clone, Copy, EnumIter, EnumString, IntoStaticStr, Display)]
 pub enum ReflectorId {
     A,
     B,
