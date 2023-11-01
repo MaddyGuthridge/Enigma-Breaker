@@ -64,19 +64,31 @@ impl Rotor {
         (self.reverse_char_map[idx] + NUM_LETTERS - self.pos) % NUM_LETTERS
     }
 
-    /// Turn over this rotor
+    /// Move this rotor to the next step
     ///
-    /// Returns whether the next one should be a regular step (`true`), which
-    /// happens if this rotor reached its turnover position or a potential
-    /// double step (`false`), which happens otherwise
+    /// Returns whether the next rotor should perform a regular step (`true`)
+    /// which happens if this rotor reaches its turnover position, or should
+    /// perform a potential double step (`false`) which happens otherwise
     pub fn step(&mut self) -> bool {
         self.pos = (self.pos + 1) % NUM_LETTERS;
         self.turnover_pos.contains(&self.pos)
     }
 
-    /// Perform a potential double step.
+    /// Move this rotor to the previous step
     ///
-    /// The rotor is stepped, only if it is configured to be a double-stepping
+    /// Returns whether the next rotor should also undo its step (`true`)
+    /// which happens if this rotor was at its turnover position, or should
+    /// potentially undo a double step (`false`) which happens otherwise
+    pub fn unstep(&mut self) -> bool {
+        let did_turnover = self.turnover_pos.contains(&self.pos);
+        self.pos = (self.pos + NUM_LETTERS - 1) % NUM_LETTERS;
+        did_turnover
+    }
+
+
+    /// Potentially perform a double step
+    ///
+    /// The rotor is stepped, iff it is configured to be a double-stepping
     /// rotor (ie not the first or last), and if it is currently at a turnover
     /// position
     ///
@@ -91,31 +103,77 @@ impl Rotor {
             false
         }
     }
+
+    /// Potentially undo a double step
+    ///
+    /// The rotor is unstepped, iff it is configured to be a double-stepping
+    /// rotor (ie not the first or last) and it will unstep to a turnover
+    /// position
+    ///
+    /// Returns whether the next one should be a regular unstep (`true`), which
+    /// happens if this rotor is unstepped, or a double step (`false`), which
+    /// happens otherwise
+    pub fn double_unstep(&mut self) -> bool {
+        if self.can_double_step && self.turnover_pos.contains(&(self.pos)) {
+            self.pos = (self.pos + NUM_LETTERS - 1) % NUM_LETTERS;
+            true
+        } else {
+            false
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::super::{
         consts::NUM_LETTERS,
-        data::{get_rotor_config, RotorId},
+        data::RotorId,
     };
-
-    use super::Rotor;
 
     #[test]
     fn inputs_are_symmetric() {
-        let r = Rotor::new(
-            "I".to_owned(),
-            get_rotor_config(RotorId::I).1,
-            get_rotor_config(RotorId::I).0,
-            false,
-            1,
-        );
+        let r = RotorId::I.make_rotor(1, false);
 
         for i in 0..NUM_LETTERS {
             let encoded = r.char_in(i);
             let decoded = r.char_out(encoded);
             assert_eq!(decoded, i);
         }
+    }
+
+    #[test]
+    fn step_unstep_simple() {
+        let mut r = RotorId::I.make_rotor(1, false);
+
+        let starting_pos = r.pos;
+
+        r.step();
+        r.unstep();
+
+        assert_eq!(r.pos, starting_pos);
+    }
+
+    /// When we hit a turnover step, does unstepping tell us that it was a
+    /// turnover
+    #[test]
+    fn step_unstep_turnover() {
+        let mut r = RotorId::I.make_rotor(16, false);
+
+        // It should have triggered the next one to step
+        assert!(r.step());
+
+        // And unstepping should also trigger it
+        assert!(r.unstep());
+    }
+
+    #[test]
+    fn double_step_double_unstep() {
+        let mut r = RotorId::I.make_rotor(16, true);
+
+        // The next one should double step
+        assert!(r.double_step());
+
+        // And unstepping should double unstep
+        assert!(r.double_unstep());
     }
 }

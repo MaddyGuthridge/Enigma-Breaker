@@ -11,7 +11,7 @@ pub use reflector::Reflector;
 pub use rotor::Rotor;
 
 use crate::util::{index_to_letter, letter_to_index};
-use data::{get_reflector_config, get_rotor_config};
+use data::get_reflector_config;
 
 #[derive(Debug)]
 pub struct EnigmaMachine {
@@ -33,14 +33,7 @@ impl EnigmaMachine {
                 .iter()
                 .enumerate()
                 .map(|(i, (id, start))| {
-                    let (turnover_pos, mappings) = get_rotor_config(*id);
-                    Rotor::new(
-                        id.to_string(),
-                        mappings,
-                        turnover_pos,
-                        double_step_rotors.contains(&i),
-                        letter_to_index(*start).0,
-                    )
+                    id.make_rotor(letter_to_index(*start).0, double_step_rotors.contains(&i))
                 })
                 .collect(),
             reflector: Reflector::new(get_reflector_config(reflector_id)),
@@ -48,6 +41,17 @@ impl EnigmaMachine {
     }
 
     fn tick(&mut self) {
+        let mut do_single_step = true;
+        for rotor in self.rotors.iter_mut().rev() {
+            if do_single_step {
+                do_single_step = rotor.step();
+            } else {
+                do_single_step = rotor.double_step();
+            }
+        }
+    }
+
+    fn untick(&mut self) {
         let mut do_single_step = true;
         for rotor in self.rotors.iter_mut().rev() {
             if do_single_step {

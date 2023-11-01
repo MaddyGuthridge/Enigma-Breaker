@@ -1,10 +1,16 @@
 use strum::IntoEnumIterator;
 
+/// Represents a potentially-unknown value. Either the value is known, in which
+/// case iterating over this enum will only yield that value, or it is unknown,
+/// in which case iterating will produce all possible values.
 pub enum Unknown<T>
 where
     T: IntoEnumIterator + Clone,
 {
+    /// The value is unknown
     Unknown,
+
+    /// The value is known
     Known(T),
 }
 
