@@ -1,5 +1,4 @@
 mod char_mapping;
-mod consts;
 mod data;
 mod plug_board;
 mod reflector;
@@ -10,17 +9,27 @@ pub use plug_board::PlugBoard;
 pub use reflector::Reflector;
 pub use rotor::Rotor;
 
-use crate::util::{index_to_letter, letter_to_index};
-use data::get_reflector_config;
+use crate::letter::Letter;
 
+/// Overall representation of the enigma machine
 #[derive(Debug)]
 pub struct EnigmaMachine {
+    /// Plug board of the machine
     plug_board: PlugBoard,
+
+    /// Vector of rotors in the machine
     rotors: Vec<Rotor>,
+
+    /// Reflector, placed at the end of the rotors
     reflector: Reflector,
+
+    /// Number of steps that the machine has performed (positive for forwards,
+    /// negative for backwards)
+    steps: i32,
 }
 
 impl EnigmaMachine {
+    /// Create a new instance of the enigma machine
     pub fn new(
         plug_board_config: &Vec<(char, char)>,
         rotor_ids: &[(RotorId, char)],
@@ -33,14 +42,19 @@ impl EnigmaMachine {
                 .iter()
                 .enumerate()
                 .map(|(i, (id, start))| {
-                    id.make_rotor(letter_to_index(*start).0, double_step_rotors.contains(&i))
+                    id.make_rotor(
+                        Letter::from_char(*start).unwrap().0,
+                        double_step_rotors.contains(&i),
+                    )
                 })
                 .collect(),
-            reflector: Reflector::new(get_reflector_config(reflector_id)),
+            reflector: reflector_id.make_reflector(),
+            steps: 0,
         }
     }
 
-    fn step(&mut self) {
+    /// Move the machine forward by a step
+    pub fn step(&mut self) {
         let mut do_single_step = true;
         for rotor in self.rotors.iter_mut().rev() {
             if do_single_step {
@@ -49,9 +63,11 @@ impl EnigmaMachine {
                 do_single_step = rotor.double_step();
             }
         }
+        self.steps += 1;
     }
 
-    fn unstep(&mut self) {
+    /// Move the machine backwards by a step
+    pub fn unstep(&mut self) {
         let mut do_single_step = true;
         for rotor in self.rotors.iter_mut().rev() {
             if do_single_step {
@@ -60,59 +76,78 @@ impl EnigmaMachine {
                 do_single_step = rotor.double_unstep();
             }
         }
+        self.steps -= 1;
     }
 
     fn encode_char(&mut self, c: char) -> char {
-        if c.is_ascii_alphabetic() {
-            let (mut i, capital) = letter_to_index(c);
-
+        if let Some((mut letter, capital)) = Letter::from_char(c) {
             // First, tick the rotors
             self.step();
 
             // Through plug board
-            i = self.plug_board.map_char(i);
+            letter = self.plug_board.map_char(letter);
 
             // Then each rotor forwards
             for rotor in self.rotors.iter().rev() {
-                i = rotor.char_out(i);
+                letter = rotor.char_out(letter);
             }
 
             // Then through the reflector
-            i = self.reflector.reflect(i);
+            letter = self.reflector.reflect(letter);
 
             // Then back through the rotors (in reverse this time)
             for rotor in &self.rotors {
-                i = rotor.char_in(i);
+                letter = rotor.char_in(letter);
             }
 
             // Then finally back through the plug board
-            i = self.plug_board.map_char(i);
+            letter = self.plug_board.map_char(letter);
 
-            index_to_letter(i, capital)
+            letter.to_char(capital)
         } else {
             c
         }
     }
 
+    /// Move the machine forwards by a number of steps
     pub fn jump_forwards(&mut self, distance: usize) {
         for _ in 0..distance {
             self.step();
         }
     }
 
+    /// Move the machine backwards by a number of steps
     pub fn jump_backwards(&mut self, distance: usize) {
         for _ in 0..distance {
             self.unstep();
         }
     }
 
+    /// Reset the machine to its initial state (ie rotors in default positions)
+    pub fn reset(&mut self) {
+        if self.steps < 0 {
+            self.jump_forwards((-self.steps) as usize)
+        } else {
+            self.jump_backwards(self.steps as usize)
+        }
+        self.steps = 0;
+    }
+
+    /// Encode a string, returning the result
     pub fn consume(&mut self, input: &str) -> String {
         input.chars().map(|c| self.encode_char(c)).collect()
     }
 
-    pub fn check_encode(&mut self, input: &str, expected_output: &str) -> bool {
+    /// Attempt to consume the given input, failing if it
+    ///
+    /// The machine is reset to its starting state if they don't match, but is
+    /// not reset if the string was consumed successfully
+    pub fn try_consume(&mut self, input: &str, expected_output: &str) -> bool {
+        let start_steps = self.steps;
         for (c_in, c_exp) in input.chars().zip(expected_output.chars()) {
             if self.encode_char(c_in) != c_exp {
+                // Jump back to position before consuming
+                self.jump_backwards((self.steps - start_steps) as usize);
                 return false;
             }
         }

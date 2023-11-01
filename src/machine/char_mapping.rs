@@ -1,92 +1,103 @@
-use std::ops::{Deref, DerefMut};
+use std::ops::{Index, IndexMut};
 
-use crate::util::{letter_to_index, index_to_letter};
+use strum::EnumCount;
 
-use super::consts::NUM_LETTERS;
-
-
-pub const INVALID_MAPPING: usize = usize::MAX;
+use crate::letter::Letter;
 
 #[derive(Debug, Clone)]
-pub struct CharMapping([usize; NUM_LETTERS]);
+pub struct CharMapping([Letter; Letter::COUNT]);
 
-impl Deref for CharMapping {
-    type Target = [usize; NUM_LETTERS];
+impl Index<Letter> for CharMapping {
+    type Output = Letter;
 
-    fn deref(&self) -> &Self::Target {
-        &self.0
+    fn index(&self, index: Letter) -> &Self::Output {
+        &self.0[index as usize]
     }
 }
 
-impl DerefMut for CharMapping {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
+impl IndexMut<Letter> for CharMapping {
+    fn index_mut(&mut self, index: Letter) -> &mut Self::Output {
+        &mut self.0[index as usize]
+    }
+}
+
+impl IntoIterator for CharMapping {
+    type Item = Letter;
+
+    type IntoIter = <[Letter; Letter::COUNT] as std::iter::IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a CharMapping {
+    type Item = &'a Letter;
+
+    type IntoIter = std::slice::Iter<'a, Letter>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
     }
 }
 
 impl Default for CharMapping {
     fn default() -> Self {
-        Self([INVALID_MAPPING; NUM_LETTERS])
+        Self([Letter::A; Letter::COUNT])
     }
 }
 
-fn add_to_mapping(
-    mapping: &mut [usize; NUM_LETTERS],
-    from: char,
-    to: char
-) {
-    let c_a = letter_to_index(from).0;
-    let c_b = letter_to_index(to).0;
-    if mapping[c_a] != INVALID_MAPPING {
-        let existing = mapping[c_a];
-        panic!(
-            "Cannot map char {from:?} to {to:?}, {from:?} already maps to {existing:?}",
-        )
-    }
-    mapping[c_a] = c_b;
-    mapping[letter_to_index(from).0] = letter_to_index(to).0;
-}
-
-fn ensure_valid(mapping: &[usize; NUM_LETTERS]) {
-    for (i, c) in mapping.iter().enumerate() {
-        if *c == INVALID_MAPPING {
-            let from = index_to_letter(i, false);
-            panic!("Missing mapping for {from:?}!");
-        }
-    }
-}
-
-impl From<[(char, char); NUM_LETTERS]> for CharMapping {
-    fn from(
-        chars: [(char, char); NUM_LETTERS],
-    ) -> CharMapping {
-        let mut mapping = [INVALID_MAPPING; NUM_LETTERS];
+impl From<[(char, char); Letter::COUNT]> for CharMapping {
+    fn from(chars: [(char, char); Letter::COUNT]) -> CharMapping {
+        let mut mapping = CharMapping::default();
 
         for (from, to) in chars {
-            add_to_mapping(&mut mapping, from, to)
+            mapping.add_to_mapping(from, to);
         }
 
-        ensure_valid(&mapping);
+        mapping
+    }
+}
 
-        CharMapping(mapping)
+impl From<[(Letter, Letter); Letter::COUNT]> for CharMapping {
+    fn from(chars: [(Letter, Letter); Letter::COUNT]) -> CharMapping {
+        let mut mapping = CharMapping::default();
+
+        for (from, to) in chars {
+            mapping[from] = to;
+            mapping[to] = from;
+        }
+
+        mapping
     }
 }
 
 impl From<Vec<(char, char)>> for CharMapping {
-    fn from(
-        chars: Vec<(char, char)>,
-    ) -> CharMapping {
-        assert_eq!(chars.len(), NUM_LETTERS);
+    fn from(chars: Vec<(char, char)>) -> CharMapping {
+        assert_eq!(chars.len(), Letter::COUNT);
 
-        let mut mapping = [INVALID_MAPPING; NUM_LETTERS];
+        let mut mapping = CharMapping::default();
 
         for (from, to) in chars {
-            add_to_mapping(&mut mapping, from, to)
+            mapping.add_to_mapping(from, to);
         }
 
-        ensure_valid(&mapping);
+        mapping
+    }
+}
 
-        CharMapping(mapping)
+impl From<Vec<(Letter, Letter)>> for CharMapping {
+    fn from(chars: Vec<(Letter, Letter)>) -> CharMapping {
+        assert_eq!(chars.len(), Letter::COUNT);
+
+        let mut mapping = CharMapping::default();
+
+        for (from, to) in chars {
+            mapping[from] = to;
+            mapping[to] = from;
+        }
+
+        mapping
     }
 }
 
@@ -94,12 +105,22 @@ impl CharMapping {
     pub fn from_reverse_of(map: &CharMapping) -> CharMapping {
         let mut new = CharMapping::default();
 
-        for (i, c) in map.iter().enumerate() {
-            new[*c] = i;
+        for (i, c) in map.0.iter().enumerate() {
+            new[*c] = Letter::from_usize(i).unwrap();
         }
 
-        ensure_valid(&new);
-
         new
+    }
+
+    fn add_to_mapping(&mut self, from: char, to: char) {
+        let c_a = Letter::from_char(from).unwrap().0;
+        let c_b = Letter::from_char(to).unwrap().0;
+        // FIXME: Add some way to check if it is valid or not
+        // if self[c_a] != INVALID_MAPPING {
+        //     let existing = self[c_a];
+        //     panic!("Cannot map char {from:?} to {to:?}, {from:?} already maps to {existing:?}",)
+        // }
+        self[c_a] = c_b;
+        self[c_b] = c_a;
     }
 }

@@ -1,5 +1,6 @@
 mod machine;
-mod util;
+mod letter;
+mod consts;
 mod force;
 
 use clap::Parser;

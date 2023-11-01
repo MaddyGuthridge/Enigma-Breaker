@@ -1,6 +1,6 @@
 use super::char_mapping::CharMapping;
-use super::consts::NUM_LETTERS;
-use crate::util::letter_to_index;
+use crate::consts::NUM_LETTERS;
+use crate::letter::Letter;
 
 #[derive(Debug, Clone)]
 pub struct Rotor {
@@ -16,11 +16,11 @@ pub struct Rotor {
     reverse_char_map: CharMapping,
 
     /// Current position of the rotor
-    pos: usize,
+    pos: Letter,
 
     /// Positions at which turning over this rotor turns over
     /// the next rotor
-    turnover_pos: Vec<usize>,
+    turnover_pos: Vec<Letter>,
 
     /// Whether this rotor is capable of performing a double-stepping operation
     can_double_step: bool,
@@ -29,16 +29,11 @@ pub struct Rotor {
 impl Rotor {
     pub fn new(
         name: String,
-        mappings: [(char, char); NUM_LETTERS],
-        turnover_pos: Vec<char>,
+        mappings: [(Letter, Letter); NUM_LETTERS],
+        turnover_pos: Vec<Letter>,
         can_double_step: bool,
-        pos: usize,
+        pos: Letter,
     ) -> Rotor {
-        let turnover_pos = turnover_pos
-            .into_iter()
-            .map(|c| letter_to_index(c).0)
-            .collect();
-
         // Build the mappings
         let char_map = CharMapping::from(mappings);
         let reverse_char_map = CharMapping::from_reverse_of(&char_map);
@@ -54,14 +49,14 @@ impl Rotor {
     }
 
     /// Convert a character sending it forwards through the system
-    pub fn char_in(&self, c: usize) -> usize {
-        let idx = (c + self.pos) % NUM_LETTERS;
-        (self.char_map[idx] + NUM_LETTERS - self.pos) % NUM_LETTERS
+    pub fn char_in(&self, c: Letter) -> Letter {
+        let idx = c + self.pos;
+        self.char_map[idx] - self.pos
     }
 
-    pub fn char_out(&self, c: usize) -> usize {
-        let idx = (c + self.pos) % NUM_LETTERS;
-        (self.reverse_char_map[idx] + NUM_LETTERS - self.pos) % NUM_LETTERS
+    pub fn char_out(&self, c: Letter) -> Letter {
+        let idx = c + self.pos;
+        self.reverse_char_map[idx] - self.pos
     }
 
     /// Move this rotor to the next step
@@ -70,7 +65,7 @@ impl Rotor {
     /// which happens if this rotor reaches its turnover position, or should
     /// perform a potential double step (`false`) which happens otherwise
     pub fn step(&mut self) -> bool {
-        self.pos = (self.pos + 1) % NUM_LETTERS;
+        self.pos += 1;
         self.turnover_pos.contains(&self.pos)
     }
 
@@ -81,7 +76,7 @@ impl Rotor {
     /// potentially undo a double step (`false`) which happens otherwise
     pub fn unstep(&mut self) -> bool {
         let did_turnover = self.turnover_pos.contains(&self.pos);
-        self.pos = (self.pos + NUM_LETTERS - 1) % NUM_LETTERS;
+        self.pos -= 1;
         did_turnover
     }
 
@@ -97,7 +92,7 @@ impl Rotor {
     /// happens otherwise
     pub fn double_step(&mut self) -> bool {
         if self.can_double_step && self.turnover_pos.contains(&(self.pos + 1)) {
-            self.pos = (self.pos + 1) % NUM_LETTERS;
+            self.pos += 1;
             true
         } else {
             false
@@ -114,8 +109,8 @@ impl Rotor {
     /// happens if this rotor is unstepped, or a double step (`false`), which
     /// happens otherwise
     pub fn double_unstep(&mut self) -> bool {
-        if self.can_double_step && self.turnover_pos.contains(&(self.pos)) {
-            self.pos = (self.pos + NUM_LETTERS - 1) % NUM_LETTERS;
+        if self.can_double_step && self.turnover_pos.contains(&self.pos) {
+            self.pos -= 1;
             true
         } else {
             false
@@ -125,16 +120,16 @@ impl Rotor {
 
 #[cfg(test)]
 mod tests {
-    use super::super::{
-        consts::NUM_LETTERS,
-        data::RotorId,
-    };
+    use strum::IntoEnumIterator;
+
+    use super::super::data::RotorId;
+    use crate::letter::Letter;
 
     #[test]
     fn inputs_are_symmetric() {
-        let r = RotorId::I.make_rotor(1, false);
+        let r = RotorId::I.make_rotor(Letter::A, false);
 
-        for i in 0..NUM_LETTERS {
+        for i in Letter::iter() {
             let encoded = r.char_in(i);
             let decoded = r.char_out(encoded);
             assert_eq!(decoded, i);
@@ -143,7 +138,7 @@ mod tests {
 
     #[test]
     fn step_unstep_simple() {
-        let mut r = RotorId::I.make_rotor(1, false);
+        let mut r = RotorId::I.make_rotor(Letter::A, false);
 
         let starting_pos = r.pos;
 
@@ -157,7 +152,7 @@ mod tests {
     /// turnover
     #[test]
     fn step_unstep_turnover() {
-        let mut r = RotorId::I.make_rotor(16, false);
+        let mut r = RotorId::I.make_rotor(Letter::R, false);
 
         // It should have triggered the next one to step
         assert!(r.step());
@@ -168,7 +163,7 @@ mod tests {
 
     #[test]
     fn double_step_double_unstep() {
-        let mut r = RotorId::I.make_rotor(16, true);
+        let mut r = RotorId::I.make_rotor(Letter::R, true);
 
         // The next one should double step
         assert!(r.double_step());
