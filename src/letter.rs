@@ -1,9 +1,14 @@
 use num::FromPrimitive;
 use num_derive::FromPrimitive as DeriveFromPrimitive;
-use std::{ops::{Add, Sub, AddAssign, SubAssign}, fmt::Display};
+use std::{
+    fmt::Display,
+    ops::{Add, AddAssign, Sub, SubAssign},
+};
 use strum::{EnumCount, EnumIter};
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord, EnumCount, EnumIter, DeriveFromPrimitive)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord, EnumCount, EnumIter, DeriveFromPrimitive,
+)]
 pub enum Letter {
     A,
     B,

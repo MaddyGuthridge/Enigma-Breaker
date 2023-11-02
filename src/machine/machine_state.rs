@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use crate::{Letter, RotorId, ReflectorId};
+use crate::{Letter, ReflectorId, RotorId};
 
 /// Represents the state of an enigma machine
 #[derive(Debug, Clone, PartialEq, Eq)]

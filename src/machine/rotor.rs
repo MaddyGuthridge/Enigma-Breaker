@@ -80,7 +80,6 @@ impl Rotor {
         did_turnover
     }
 
-
     /// Potentially perform a double step
     ///
     /// The rotor is stepped, iff it is configured to be a double-stepping
