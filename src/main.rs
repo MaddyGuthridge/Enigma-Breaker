@@ -1,5 +1,5 @@
 mod consts;
-mod force;
+mod brute_force;
 mod letter;
 mod machine;
 
@@ -56,12 +56,15 @@ fn main() {
     let (rotor_ids, rotor_starts): (Vec<_>, Vec<_>) = rotors.into_iter().unzip();
 
     // And also parse the plug maps
-    let plugs: Vec<(char, char)> = args
+    let plugs: Vec<(Letter, Letter)> = args
         .plug_map
         .into_iter()
         .map(|c| {
             assert_eq!(c.len(), 2);
-            (c.chars().next().unwrap(), c.chars().nth(1).unwrap())
+            (
+                Letter::from_char(c.chars().next().unwrap()).unwrap().0,
+                Letter::from_char(c.chars().nth(1).unwrap()).unwrap().0,
+            )
         })
         .collect();
 

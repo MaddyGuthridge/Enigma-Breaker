@@ -8,24 +8,14 @@ pub struct PlugBoard {
 }
 
 impl PlugBoard {
-    pub fn new(mapping: &Vec<(char, char)>) -> PlugBoard {
+    pub fn new(mapping: &Vec<(Letter, Letter)>) -> PlugBoard {
         let expected_map_size = mapping.len() * 2;
 
-        let int_mappings: Vec<(Letter, Letter)> = mapping
-            .iter()
-            .map(|(a, b)| {
-                (
-                    Letter::from_char(*a).unwrap().0,
-                    Letter::from_char(*b).unwrap().0,
-                )
-            })
-            .collect();
-
-        let built_map: BTreeMap<_, _> = int_mappings
+        let built_map: BTreeMap<_, _> = mapping
             .clone()
             .into_iter()
             .map(|(a, b)| (b, a))
-            .chain(int_mappings)
+            .chain(mapping.clone())
             .collect();
 
         // Make sure there we got the right number of elements

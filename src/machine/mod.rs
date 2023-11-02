@@ -31,7 +31,7 @@ pub struct EnigmaMachine {
 impl EnigmaMachine {
     /// Create a new instance of the enigma machine
     pub fn new(
-        plug_board_config: &Vec<(char, char)>,
+        plug_board_config: &Vec<(Letter, Letter)>,
         rotor_ids: &[RotorId],
         rotor_starts: &[Letter],
         reflector_id: ReflectorId,
@@ -206,7 +206,16 @@ mod tests {
             .collect::<Vec<_>>();
 
         let mut machine = EnigmaMachine::new(
-            &test_data.plugs,
+            &test_data
+                .plugs
+                .iter()
+                .map(|(a, b)| {
+                    (
+                        Letter::from_char(*a).unwrap().0,
+                        Letter::from_char(*b).unwrap().0,
+                    )
+                })
+                .collect(),
             &rotor_ids,
             &rotor_starts
                 .iter()
@@ -247,7 +256,16 @@ mod tests {
             .collect::<Vec<_>>();
 
         let mut machine = EnigmaMachine::new(
-            &test_data.plugs,
+            &test_data
+                .plugs
+                .iter()
+                .map(|(a, b)| {
+                    (
+                        Letter::from_char(*a).unwrap().0,
+                        Letter::from_char(*b).unwrap().0,
+                    )
+                })
+                .collect(),
             &rotor_ids,
             &rotor_starts
                 .iter()
