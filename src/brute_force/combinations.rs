@@ -1,16 +1,23 @@
 use itertools::Itertools;
 
-use crate::{RotorId, letter::Letter, machine::ReflectorId, EnigmaMachine};
+use crate::{
+    letter::Letter,
+    machine::{MachineState, ReflectorId},
+    EnigmaMachine, RotorId,
+};
 
 use super::unknown::Unknown;
-
 
 /// Brute-force by trying all combinations until a match is found
 pub fn force_combinations(
     rotors: Option<Vec<(Unknown<RotorId>, Unknown<Letter>)>>,
     reflector: Unknown<ReflectorId>,
-) {
-    let mut matches: Vec<bool> = Vec::default();
+    input: &String,
+    starting_string: &Option<String>,
+    ending_string: &Option<String>,
+    contained_string: &Option<String>,
+) -> Vec<MachineState> {
+    let mut matches: Vec<MachineState> = Vec::default();
 
     // Assume 3 unknown rotors if no rotors are specified
     let rotors = rotors.unwrap_or(vec![
@@ -26,15 +33,29 @@ pub fn force_combinations(
     for reflect in reflector {
         for rotors in rotor_ids.iter().multi_cartesian_product() {
             for positions in rotor_positions.iter().multi_cartesian_product() {
-                let machine = EnigmaMachine::new(
-                    &vec![],
-                    &rotors,
-                    &positions,
+                // Create a machine with the current state
+                let mut machine = EnigmaMachine::from(MachineState::new(
+                    Vec::default(),
+                    rotors.clone(),
+                    positions,
                     reflect,
-                );
+                ));
+
+                // If it matches
+                if check_machine(
+                    &mut machine,
+                    input,
+                    starting_string,
+                    ending_string,
+                    contained_string,
+                ) {
+                    matches.push(machine.get_starting_state());
+                }
             }
         }
     }
+
+    matches
 }
 
 /// Check to see if the given machine matches the criteria for the decoded

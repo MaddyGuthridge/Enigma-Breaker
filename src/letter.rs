@@ -1,6 +1,6 @@
 use num::FromPrimitive;
 use num_derive::FromPrimitive as DeriveFromPrimitive;
-use std::ops::{Add, Sub, AddAssign, SubAssign};
+use std::{ops::{Add, Sub, AddAssign, SubAssign}, fmt::Display};
 use strum::{EnumCount, EnumIter};
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Ord, EnumCount, EnumIter, DeriveFromPrimitive)]
@@ -110,6 +110,12 @@ impl Sub<Letter> for Letter {
 
     fn sub(self, rhs: Letter) -> Self::Output {
         Self::from_usize((self as usize + Self::COUNT - rhs as usize) % Self::COUNT).unwrap()
+    }
+}
+
+impl Display for Letter {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_char(true))
     }
 }
 

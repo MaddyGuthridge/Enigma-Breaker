@@ -1,11 +1,11 @@
-mod consts;
 mod brute_force;
+mod consts;
 mod letter;
 mod machine;
 
 use clap::Parser;
 use letter::Letter;
-use machine::{EnigmaMachine, RotorId};
+use machine::{EnigmaMachine, MachineState, ReflectorId, RotorId};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
@@ -69,15 +69,15 @@ fn main() {
         .collect();
 
     // Now configure the machine
-    let mut machine = EnigmaMachine::new(
-        &plugs,
-        &rotor_ids,
-        &rotor_starts,
+    let mut machine = EnigmaMachine::from(MachineState::new(
+        plugs,
+        rotor_ids,
+        rotor_starts,
         args.reflector_id
             .as_str()
             .try_into()
             .expect("Invalid reflector ID"),
-    );
+    ));
 
     for line in std::io::stdin().lines() {
         println!("{}", machine.consume(&line.unwrap()));
