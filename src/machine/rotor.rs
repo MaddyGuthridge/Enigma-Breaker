@@ -1,6 +1,6 @@
 use super::char_mapping::CharMapping;
-use crate::consts::NUM_LETTERS;
 use crate::letter::Letter;
+use strum::EnumCount;
 
 #[derive(Debug, Clone)]
 pub struct Rotor {
@@ -29,7 +29,7 @@ pub struct Rotor {
 impl Rotor {
     pub fn new(
         name: String,
-        mappings: [(Letter, Letter); NUM_LETTERS],
+        mappings: [(Letter, Letter); Letter::COUNT],
         turnover_pos: Vec<Letter>,
         can_double_step: bool,
         pos: Letter,

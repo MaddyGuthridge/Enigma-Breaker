@@ -1,5 +1,6 @@
 use super::char_mapping::CharMapping;
-use crate::{consts::NUM_LETTERS, letter::Letter};
+use crate::letter::Letter;
+use strum::EnumCount;
 
 #[derive(Debug)]
 pub struct Reflector {
@@ -7,7 +8,7 @@ pub struct Reflector {
 }
 
 impl Reflector {
-    pub fn new(mapping: [(Letter, Letter); NUM_LETTERS / 2]) -> Reflector {
+    pub fn new(mapping: [(Letter, Letter); Letter::COUNT / 2]) -> Reflector {
         let char_map = CharMapping::from(
             mapping
                 .into_iter()

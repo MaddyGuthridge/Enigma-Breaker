@@ -1,6 +1,6 @@
 use super::{Reflector, Rotor};
-use crate::{consts::NUM_LETTERS, letter::Letter};
-use strum::{Display, EnumIter, EnumString, IntoStaticStr};
+use crate::letter::Letter;
+use strum::{Display, EnumIter, EnumString, IntoStaticStr, EnumCount};
 
 /// ID representing a rotor with a specific configuration
 #[derive(Debug, Clone, Copy, EnumIter, EnumString, IntoStaticStr, Display, PartialEq, Eq)]
@@ -33,7 +33,7 @@ impl RotorId {
 
     /// Returns a tuple containing the turnover positions and the character
     /// mappings of the rotor
-    fn get_rotor_config(self: &RotorId) -> (Vec<Letter>, [(Letter, Letter); NUM_LETTERS]) {
+    fn get_rotor_config(self: &RotorId) -> (Vec<Letter>, [(Letter, Letter); Letter::COUNT]) {
         match self {
             RotorId::I => (
                 vec![Letter::R],
@@ -206,7 +206,7 @@ impl ReflectorId {
         Reflector::new(self.get_reflector_config())
     }
 
-    fn get_reflector_config(&self) -> [(Letter, Letter); NUM_LETTERS / 2] {
+    fn get_reflector_config(&self) -> [(Letter, Letter); Letter::COUNT / 2] {
         match self {
             ReflectorId::A => todo!(),
             ReflectorId::B => [
