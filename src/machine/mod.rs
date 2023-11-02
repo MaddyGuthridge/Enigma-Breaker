@@ -135,7 +135,8 @@ impl EnigmaMachine {
         input.chars().map(|c| self.encode_char(c)).collect()
     }
 
-    /// Attempt to consume the given input, failing if it
+    /// Attempt to consume the given input, failing if the input doesn't match
+    /// the expected output
     ///
     /// The machine is reset to its starting state if they don't match, but is
     /// not reset if the string was consumed successfully
