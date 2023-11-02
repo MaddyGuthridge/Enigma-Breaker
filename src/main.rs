@@ -1,9 +1,10 @@
-mod machine;
-mod letter;
 mod consts;
 mod force;
+mod letter;
+mod machine;
 
 use clap::Parser;
+use letter::Letter;
 use machine::{EnigmaMachine, RotorId};
 
 #[derive(Debug, Parser)]
@@ -31,7 +32,7 @@ fn main() {
     let args = Cli::parse();
 
     // Parse the rotor options
-    let rotors: Vec<(RotorId, char)> = args
+    let rotors: Vec<(RotorId, Letter)> = args
         .rotor_ids
         .into_iter()
         .map(|r| match r.split_once(':') {
@@ -39,18 +40,20 @@ fn main() {
                 r.as_str()
                     .try_into()
                     .unwrap_or_else(|_| panic!("Invalid rotor ID {r:?}")),
-                'A',
+                Letter::A,
             ),
             Some((id, start)) => {
                 let parsed = start.chars().next().unwrap();
                 (
                     id.try_into()
                         .unwrap_or_else(|_| panic!("Invalid rotor ID {r:?}")),
-                    parsed,
+                    Letter::from_char(parsed).unwrap().0,
                 )
             }
         })
         .collect();
+
+    let (rotor_ids, rotor_starts): (Vec<_>, Vec<_>) = rotors.into_iter().unzip();
 
     // And also parse the plug maps
     let plugs: Vec<(char, char)> = args
@@ -65,7 +68,8 @@ fn main() {
     // Now configure the machine
     let mut machine = EnigmaMachine::new(
         &plugs,
-        &rotors,
+        &rotor_ids,
+        &rotor_starts,
         args.reflector_id
             .as_str()
             .try_into()

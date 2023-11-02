@@ -25,10 +25,9 @@ pub fn force_combinations(
         for rotors in rotor_ids.iter().multi_cartesian_product() {
             for positions in rotor_positions.iter().multi_cartesian_product() {
                 let machine = EnigmaMachine::new(
-                    vec![],
-                    // TODO: Make enigma machine creator require rotor IDs
-                    // separate from their starting positions
-                    vec![],
+                    &vec![],
+                    &rotors,
+                    &positions,
                     reflect,
                 );
             }

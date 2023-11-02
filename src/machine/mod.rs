@@ -32,7 +32,8 @@ impl EnigmaMachine {
     /// Create a new instance of the enigma machine
     pub fn new(
         plug_board_config: &Vec<(char, char)>,
-        rotor_ids: &[(RotorId, char)],
+        rotor_ids: &[RotorId],
+        rotor_starts: &[Letter],
         reflector_id: ReflectorId,
     ) -> EnigmaMachine {
         let double_step_rotors = 1..rotor_ids.len() - 1;
@@ -40,13 +41,9 @@ impl EnigmaMachine {
             plug_board: PlugBoard::new(plug_board_config),
             rotors: rotor_ids
                 .iter()
+                .zip(rotor_starts)
                 .enumerate()
-                .map(|(i, (id, start))| {
-                    id.make_rotor(
-                        Letter::from_char(*start).unwrap().0,
-                        double_step_rotors.contains(&i),
-                    )
-                })
+                .map(|(i, (id, start))| id.make_rotor(*start, double_step_rotors.contains(&i)))
                 .collect(),
             reflector: reflector_id.make_reflector(),
             steps: 0,
@@ -161,7 +158,9 @@ mod tests {
 
     use serde::Deserialize;
 
-    use super::{EnigmaMachine, RotorId};
+    use crate::Letter;
+
+    use super::EnigmaMachine;
 
     #[derive(Debug, Deserialize)]
     struct TestCase {
@@ -188,13 +187,20 @@ mod tests {
     fn run_test_case(path: &str) {
         let test_data = read_test_case(path);
 
+        let (rotor_ids, rotor_starts): (Vec<_>, Vec<_>) = test_data.rotors.into_iter().unzip();
+
+        let rotor_ids = rotor_ids
+            .into_iter()
+            .map(|id| id.as_str().try_into().unwrap())
+            .collect::<Vec<_>>();
+
         let mut machine = EnigmaMachine::new(
             &test_data.plugs,
-            &test_data
-                .rotors
-                .into_iter()
-                .map(|(id, start)| (id.as_str().try_into().unwrap(), start))
-                .collect::<Vec<(RotorId, char)>>(),
+            &rotor_ids,
+            &rotor_starts
+                .iter()
+                .map(|c| Letter::from_char(*c).unwrap().0)
+                .collect::<Vec<_>>(),
             test_data.reflector_id.as_str().try_into().unwrap(),
         );
 
@@ -222,13 +228,20 @@ mod tests {
     fn test_jumps() {
         let test_data = read_test_case("tests/simple.json");
 
+        let (rotor_ids, rotor_starts): (Vec<_>, Vec<_>) = test_data.rotors.into_iter().unzip();
+
+        let rotor_ids = rotor_ids
+            .into_iter()
+            .map(|id| id.as_str().try_into().unwrap())
+            .collect::<Vec<_>>();
+
         let mut machine = EnigmaMachine::new(
             &test_data.plugs,
-            &test_data
-                .rotors
-                .into_iter()
-                .map(|(id, start)| (id.as_str().try_into().unwrap(), start))
-                .collect::<Vec<(RotorId, char)>>(),
+            &rotor_ids,
+            &rotor_starts
+                .iter()
+                .map(|c| Letter::from_char(*c).unwrap().0)
+                .collect::<Vec<_>>(),
             test_data.reflector_id.as_str().try_into().unwrap(),
         );
 
@@ -240,30 +253,4 @@ mod tests {
 
         assert_eq!(encoded, test_data.expect);
     }
-}
-
-#[cfg(test)]
-mod benchmark {
-    use criterion::{criterion_group, criterion_main, Criterion};
-    use super::{EnigmaMachine, RotorId, ReflectorId};
-
-    fn benchmark_encode(c: &mut Criterion) {
-        c.bench_function("encode", |b| {
-
-            let mut machine = EnigmaMachine::new(
-                &vec![],
-                &[(RotorId::I, 'a'), (RotorId::II, 'b'), (RotorId::III, 'c')],
-                ReflectorId::C,
-            );
-
-            let input = "A".repeat(1000);
-
-            b.iter(|| {
-                machine.consume(&input);
-            });
-        });
-    }
-
-    criterion_group!(benches, benchmark_encode);
-    criterion_main!(benches);
 }

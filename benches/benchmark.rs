@@ -1,11 +1,12 @@
-use enigma::{EnigmaMachine, ReflectorId, RotorId};
+use enigma::{EnigmaMachine, ReflectorId, RotorId, Letter};
 use criterion::{criterion_group, criterion_main, Criterion};
 
 fn benchmark(c: &mut Criterion) {
     c.bench_function("encode 1000", |b| {
         let mut machine = EnigmaMachine::new(
             &vec![],
-            &[(RotorId::I, 'a'), (RotorId::II, 'b'), (RotorId::III, 'c')],
+            &[RotorId::I, RotorId::II, RotorId::III],
+            &[Letter::A, Letter::B, Letter::C],
             ReflectorId::C,
         );
 
@@ -19,7 +20,8 @@ fn benchmark(c: &mut Criterion) {
     c.bench_function("step all rotor combinations", |b| {
         let mut machine = EnigmaMachine::new(
             &vec![],
-            &[(RotorId::I, 'a'), (RotorId::II, 'b'), (RotorId::III, 'c')],
+            &[RotorId::I, RotorId::II, RotorId::III],
+            &[Letter::A, Letter::B, Letter::C],
             ReflectorId::C,
         );
 
