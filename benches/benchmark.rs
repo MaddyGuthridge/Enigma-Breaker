@@ -1,14 +1,14 @@
-use enigma::{EnigmaMachine, ReflectorId, RotorId, Letter};
 use criterion::{criterion_group, criterion_main, Criterion};
+use enigma::{EnigmaMachine, Letter, MachineState, ReflectorId, RotorId};
 
 fn benchmark(c: &mut Criterion) {
     c.bench_function("encode 1000", |b| {
-        let mut machine = EnigmaMachine::new(
-            &vec![],
-            &[RotorId::I, RotorId::II, RotorId::III],
-            &[Letter::A, Letter::B, Letter::C],
+        let mut machine = EnigmaMachine::from(MachineState::new(
+            vec![],
+            vec![RotorId::I, RotorId::II, RotorId::III],
+            vec![Letter::A, Letter::B, Letter::C],
             ReflectorId::C,
-        );
+        ));
 
         let input = "A".repeat(1000);
 
@@ -18,12 +18,12 @@ fn benchmark(c: &mut Criterion) {
     });
 
     c.bench_function("step all rotor combinations", |b| {
-        let mut machine = EnigmaMachine::new(
-            &vec![],
-            &[RotorId::I, RotorId::II, RotorId::III],
-            &[Letter::A, Letter::B, Letter::C],
+        let mut machine = EnigmaMachine::from(MachineState::new(
+            vec![],
+            vec![RotorId::I, RotorId::II, RotorId::III],
+            vec![Letter::A, Letter::B, Letter::C],
             ReflectorId::C,
-        );
+        ));
 
         b.iter(|| {
             // The rotors don't repeat for about 17000 steps
