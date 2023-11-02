@@ -1,4 +1,6 @@
-use crate::{RotorId, letter::Letter, machine::ReflectorId};
+use itertools::Itertools;
+
+use crate::{RotorId, letter::Letter, machine::ReflectorId, EnigmaMachine};
 
 use super::unknown::Unknown;
 
@@ -15,5 +17,21 @@ pub fn force_combinations(
         (Unknown::Unknown, Unknown::Unknown),
     ]);
 
-    
+    // Split rotors from their starting positions
+    let (rotor_ids, rotor_positions): (Vec<_>, Vec<_>) = rotors.into_iter().unzip();
+
+    // For all possible reflectors
+    for reflect in reflector {
+        for rotors in rotor_ids.iter().multi_cartesian_product() {
+            for positions in rotor_positions.iter().multi_cartesian_product() {
+                let machine = EnigmaMachine::new(
+                    vec![],
+                    // TODO: Make enigma machine creator require rotor IDs
+                    // separate from their starting positions
+                    vec![],
+                    reflect,
+                );
+            }
+        }
+    }
 }
