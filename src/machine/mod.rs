@@ -141,6 +141,16 @@ impl EnigmaMachine {
     /// not reset if the string was consumed successfully
     pub fn try_consume(&mut self, input: &str, expected_output: &str) -> bool {
         let start_steps = self.steps;
+
+        // Optimisation - if input and expected output contain any letters that
+        // are equal, the input is guaranteed not to encode to the output,
+        // since enigma machines never encode a character to itself
+        for (c_in, c_exp) in input.chars().zip(expected_output.chars()) {
+            if c_in == c_exp && c_in.is_ascii_alphabetic() {
+                return false;
+            }
+        }
+
         for (c_in, c_exp) in input.chars().zip(expected_output.chars()) {
             if self.encode_char(c_in) != c_exp {
                 // Jump back to position before consuming
