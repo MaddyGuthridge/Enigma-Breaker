@@ -29,13 +29,13 @@ pub struct ForceArgs {
     /// `id` is the rotor ID (in roman numerals), and `start` is the starting
     /// position of said rotor. `start` defaults to unknown.
     ///
-    /// Unknown values should be set as `"?"`. For example, if the rotor ID is
-    /// unknown, use `"?"`, if the rotor id is unknown but the position is
-    /// known to be A, use "?:A", etc.
+    /// Unknown values should be set as `"!"`. For example, if the rotor ID is
+    /// unknown, use `"!"`, if the rotor id is unknown but the position is
+    /// known to be A, use "!:A", etc.
     #[clap(short, long, value_parser, num_args = 1.., value_delimiter = ' ')]
     rotor_ids: Vec<String>,
 
-    /// ID of reflector to use, eg `"B"`. Use `"?"` if unknown
+    /// ID of reflector to use, eg `"B"`. Use `"!"` if unknown
     reflector_id: Option<String>,
 
     /// String known to be located at the start of the enciphered message
@@ -61,7 +61,7 @@ pub fn force_main(args: ForceArgs) {
                 .map(|r| match r.split_once(':') {
                     // Only rotor ID
                     None => {
-                        if r == "?" {
+                        if r == "!" {
                             (Unknown::Unknown, Unknown::Unknown)
                         } else {
                             (
@@ -79,7 +79,7 @@ pub fn force_main(args: ForceArgs) {
                         assert_eq!(start.len(), 1);
                         let start_letter = start.chars().next().unwrap();
 
-                        let rotor_unknown: Unknown<RotorId> = if id == "?" {
+                        let rotor_unknown: Unknown<RotorId> = if id == "!" {
                             Unknown::Unknown
                         } else {
                             Unknown::Known(
@@ -88,7 +88,7 @@ pub fn force_main(args: ForceArgs) {
                             )
                         };
 
-                        let start_unknown = if start_letter == '?' {
+                        let start_unknown = if start_letter == '!' {
                             Unknown::Unknown
                         } else {
                             Unknown::Known(Letter::from_char(start_letter).unwrap().0)
@@ -106,7 +106,7 @@ pub fn force_main(args: ForceArgs) {
 
     // Also handle the reflector
     let reflector: Unknown<ReflectorId> = if let Some(id) = args.reflector_id {
-        if id == "?" {
+        if id == "!" {
             Unknown::Unknown
         } else {
             Unknown::Known(id.as_str().try_into().expect("Invalid reflector ID"))
@@ -177,7 +177,7 @@ pub fn force_main(args: ForceArgs) {
     println!("Done! Found {} matches", matches.len());
 
     for (i, result) in matches.iter().enumerate() {
-        println!("{i} :: {result}");
+        println!("{} :: {}", i + 1, result);
         let decoded = EnigmaMachine::from(result.clone())
             .consume(&message)
             .to_string();
