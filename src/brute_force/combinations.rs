@@ -10,6 +10,7 @@ use super::unknown::Unknown;
 
 /// Brute-force by trying all combinations until a match is found
 pub fn force_combinations(
+    num_plugs: u8,
     rotors: Option<Vec<(Unknown<RotorId>, Unknown<Letter>)>>,
     reflector: Unknown<ReflectorId>,
     input: &Message,
@@ -31,7 +32,9 @@ pub fn force_combinations(
 
     // For all possible reflectors
     for reflect in reflector {
+        // For all possible rotor IDs
         for rotors in rotor_ids.iter().multi_cartesian_product() {
+            // For all possible positions for each rotor
             for positions in rotor_positions.iter().multi_cartesian_product() {
                 // Create a machine with the current state
                 let mut machine = EnigmaMachine::from(MachineState::new(

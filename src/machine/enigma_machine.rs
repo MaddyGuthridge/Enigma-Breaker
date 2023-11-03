@@ -1,4 +1,7 @@
-use crate::{letter::Letter, MachineState, message::{MessageChar, Message}};
+use crate::{
+    message::{Message, MessageChar},
+    MachineState,
+};
 
 use super::{PlugBoard, Reflector, Rotor};
 
@@ -125,7 +128,7 @@ impl EnigmaMachine {
         // are equal, the input is guaranteed not to encode to the output,
         // since enigma machines never encode a character to itself
         for (c_in, c_exp) in input.iter().zip(expected_output.iter()) {
-            if let MessageChar::Alpha(letter, capital) = c_in {
+            if let MessageChar::Alpha(..) = c_in {
                 if c_in == c_exp {
                     return false;
                 }

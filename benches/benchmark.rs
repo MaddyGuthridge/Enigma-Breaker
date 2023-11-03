@@ -1,5 +1,5 @@
 use criterion::{criterion_group, criterion_main, Criterion};
-use enigma::{EnigmaMachine, Letter, MachineState, ReflectorId, RotorId};
+use enigma::{EnigmaMachine, Letter, MachineState, ReflectorId, RotorId, Message};
 
 fn benchmark(c: &mut Criterion) {
     c.bench_function("encode 1000", |b| {
@@ -10,7 +10,7 @@ fn benchmark(c: &mut Criterion) {
             ReflectorId::C,
         ));
 
-        let input = "A".repeat(1000);
+        let input = Message::from("A".repeat(1000));
 
         b.iter(|| {
             machine.consume(&input);
