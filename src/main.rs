@@ -1,6 +1,7 @@
 mod brute_force;
 mod letter;
 mod machine;
+mod message;
 
 use clap::Parser;
 use letter::Letter;
