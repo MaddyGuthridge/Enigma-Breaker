@@ -3,7 +3,7 @@ use clap::Args;
 use crate::{EnigmaMachine, Letter, MachineState, RotorId};
 
 #[derive(Args)]
-pub struct EncodeArgs {
+pub struct EncipherArgs {
     /// ID of reflector to use, eg `"B"`
     reflector_id: String,
 
@@ -22,7 +22,7 @@ pub struct EncodeArgs {
     plug_map: Vec<String>,
 }
 
-pub fn encode_main(args: EncodeArgs) {
+pub fn encipher_main(args: EncipherArgs) {
     // Parse the rotor options
     let rotors: Vec<(RotorId, Letter)> = args
         .rotor_ids

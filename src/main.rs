@@ -5,16 +5,16 @@ mod message;
 mod cli;
 
 use clap::{Parser, Subcommand};
-use cli::{EncodeArgs, encode_main, ForceArgs, force_main};
+use cli::{EncipherArgs, encipher_main, ForceArgs, force_main};
 use letter::Letter;
 use machine::{EnigmaMachine, MachineState, ReflectorId, RotorId};
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Encode a string using the enigma machine
-    Encode(EncodeArgs),
+    /// Encipher a string using the enigma machine
+    Encipher(EncipherArgs),
 
-    /// Use brute-force to decipher an enigma machine encoded message
+    /// Use brute-force to decipher a message enciphered using an enigma machine
     Force(ForceArgs),
 }
 
@@ -30,7 +30,7 @@ fn main() {
     let args = Cli::parse();
 
     match args.command {
-        Commands::Encode(args) => encode_main(args),
+        Commands::Encipher(args) => encipher_main(args),
         Commands::Force(args) => force_main(args),
     }
 }

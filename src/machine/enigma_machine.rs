@@ -57,7 +57,7 @@ impl EnigmaMachine {
         self.steps -= 1;
     }
 
-    fn encode_char(&mut self, c: &MessageChar) -> MessageChar {
+    fn enchipher_char(&mut self, c: &MessageChar) -> MessageChar {
         if let MessageChar::Alpha(mut letter, capital) = c {
             // First, tick the rotors
             self.step();
@@ -111,9 +111,9 @@ impl EnigmaMachine {
         self.steps = 0;
     }
 
-    /// Encode a string, returning the result
+    /// Encipher a string, returning the result
     pub fn consume(&mut self, input: &Message) -> Message {
-        input.iter().map(|c| self.encode_char(c)).collect()
+        input.iter().map(|c| self.enchipher_char(c)).collect()
     }
 
     /// Attempt to consume the given input, failing if the input doesn't match
@@ -125,8 +125,8 @@ impl EnigmaMachine {
         let start_steps = self.steps;
 
         // Optimisation - if input and expected output contain any letters that
-        // are equal, the input is guaranteed not to encode to the output,
-        // since enigma machines never encode a character to itself
+        // are equal, the input is guaranteed not to encipher to the output,
+        // since enigma machines never encipher a character to itself
         for (c_in, c_exp) in input.iter().zip(expected_output.iter()) {
             if let MessageChar::Alpha(..) = c_in {
                 if c_in == c_exp {
@@ -136,7 +136,7 @@ impl EnigmaMachine {
         }
 
         for (c_in, c_exp) in input.iter().zip(expected_output.iter()) {
-            if self.encode_char(c_in) != *c_exp {
+            if self.enchipher_char(c_in) != *c_exp {
                 // Jump back to position before consuming
                 self.jump_backwards((self.steps - start_steps) as usize);
                 return false;
@@ -232,9 +232,9 @@ mod tests {
 
         let mut machine = EnigmaMachine::from(MachineState::from(test_data.clone()));
 
-        let encoded = machine.consume(&test_data.input.into());
+        let enciphered = machine.consume(&test_data.input.into());
 
-        assert_eq!(encoded.to_string(), test_data.expect);
+        assert_eq!(enciphered.to_string(), test_data.expect);
     }
 
     #[test]
@@ -262,8 +262,8 @@ mod tests {
         machine.jump_forwards(1000);
         machine.jump_backwards(1000);
 
-        let encoded = machine.consume(&test_data.input.into());
+        let enciphered = machine.consume(&test_data.input.into());
 
-        assert_eq!(encoded.to_string(), test_data.expect);
+        assert_eq!(enciphered.to_string(), test_data.expect);
     }
 }
