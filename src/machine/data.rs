@@ -208,7 +208,21 @@ impl ReflectorId {
 
     fn get_reflector_config(&self) -> [(Letter, Letter); Letter::COUNT / 2] {
         match self {
-            ReflectorId::A => todo!(),
+            ReflectorId::A => [
+                (Letter::A, Letter::E),
+                (Letter::B, Letter::J),
+                (Letter::C, Letter::M),
+                (Letter::D, Letter::Z),
+                (Letter::F, Letter::L),
+                (Letter::G, Letter::Y),
+                (Letter::H, Letter::X),
+                (Letter::I, Letter::V),
+                (Letter::K, Letter::W),
+                (Letter::N, Letter::R),
+                (Letter::O, Letter::Q),
+                (Letter::P, Letter::U),
+                (Letter::S, Letter::T),
+            ],
             ReflectorId::B => [
                 (Letter::A, Letter::Y),
                 (Letter::B, Letter::R),
