@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::ops::{Range, RangeInclusive};
 
 use crate::Letter;
 
@@ -9,4 +9,7 @@ pub enum PlugboardOptions {
 
     /// The number of connections is within the given range
     NumberInRange(Range<usize>),
+
+    /// The number of connections is within the given range
+    NumberInRangeInclusive(RangeInclusive<usize>),
 }

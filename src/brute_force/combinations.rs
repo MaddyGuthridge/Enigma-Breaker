@@ -56,6 +56,12 @@ pub fn force_combinations(
                 .combinations(plug_count)
                 .map(|v| v.into_iter().cloned().collect_vec())
         })),
+        PlugboardOptions::NumberInRangeInclusive(range) => Box::new(range.flat_map(|plug_count| {
+            plugs
+                .iter()
+                .combinations(plug_count)
+                .map(|v| v.into_iter().cloned().collect_vec())
+        })),
     };
 
     // For every combination of plugs
