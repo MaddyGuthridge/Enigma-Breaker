@@ -80,6 +80,6 @@ fn main() {
     ));
 
     for line in std::io::stdin().lines() {
-        println!("{}", machine.consume(&line.unwrap()));
+        println!("{}", machine.consume(&line.unwrap().into()).to_string());
     }
 }

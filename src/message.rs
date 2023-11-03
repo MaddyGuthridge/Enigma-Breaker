@@ -8,9 +8,9 @@ use crate::Letter;
 /// the amount of processing time.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MessageChar {
-    /// Character is a letter, bool represents whether it is capitalised
+    /// Character is alphabetic, bool represents whether it is capitalised
     /// (`true`) or not (`false`).
-    Letter(Letter, bool),
+    Alpha(Letter, bool),
 
     /// Character is not a letter, and is therefore not encoded
     Other(char),
@@ -19,7 +19,7 @@ pub enum MessageChar {
 impl From<char> for MessageChar {
     fn from(c: char) -> Self {
         if let Some((letter, capital)) = Letter::from_char(c) {
-            MessageChar::Letter(letter, capital)
+            MessageChar::Alpha(letter, capital)
         } else {
             MessageChar::Other(c)
         }
@@ -29,7 +29,7 @@ impl From<char> for MessageChar {
 impl From<MessageChar> for char {
     fn from(val: MessageChar) -> Self {
         match val {
-            MessageChar::Letter(l, capital) => l.to_char(capital),
+            MessageChar::Alpha(l, capital) => l.to_char(capital),
             MessageChar::Other(c) => c,
         }
     }
@@ -62,5 +62,11 @@ impl From<String> for Message {
 impl ToString for Message {
     fn to_string(&self) -> String {
         self.iter().map(|c| Into::<char>::into(c.clone())).collect()
+    }
+}
+
+impl FromIterator<MessageChar> for Message {
+    fn from_iter<T: IntoIterator<Item = MessageChar>>(iter: T) -> Self {
+        Message(iter.into_iter().collect())
     }
 }

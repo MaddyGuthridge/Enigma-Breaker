@@ -3,7 +3,7 @@ use itertools::Itertools;
 use crate::{
     letter::Letter,
     machine::{MachineState, ReflectorId},
-    EnigmaMachine, RotorId,
+    EnigmaMachine, RotorId, message::Message,
 };
 
 use super::unknown::Unknown;
@@ -12,10 +12,10 @@ use super::unknown::Unknown;
 pub fn force_combinations(
     rotors: Option<Vec<(Unknown<RotorId>, Unknown<Letter>)>>,
     reflector: Unknown<ReflectorId>,
-    input: &String,
-    starting_string: &Option<String>,
-    ending_string: &Option<String>,
-    contained_string: &Option<String>,
+    input: &Message,
+    starting_string: &Option<Message>,
+    ending_string: &Option<Message>,
+    contained_string: &Option<Message>,
 ) -> Vec<MachineState> {
     let mut matches: Vec<MachineState> = Vec::default();
 
@@ -71,13 +71,13 @@ pub fn force_combinations(
 #[inline]
 fn check_machine(
     machine: &mut EnigmaMachine,
-    input: &String,
-    starting_string: &Option<String>,
-    ending_string: &Option<String>,
-    contained_string: &Option<String>,
+    input: &Message,
+    starting_string: &Option<Message>,
+    ending_string: &Option<Message>,
+    contained_string: &Option<Message>,
 ) -> bool {
     if let Some(start) = starting_string {
-        if !machine.try_consume(input, start) {
+        if !machine.try_consume(&input, &start) {
             return false;
         }
         machine.reset();
@@ -85,7 +85,7 @@ fn check_machine(
 
     if let Some(end) = ending_string {
         machine.jump_forwards(input.len() - end.len());
-        if !machine.try_consume(input, end) {
+        if !machine.try_consume(&input, &end) {
             return false;
         }
         machine.reset();
@@ -95,7 +95,7 @@ fn check_machine(
         let mut found_match = false;
         for i in 0..(input.len() - contained.len()) {
             machine.jump_forwards(i);
-            if machine.try_consume(input, contained) {
+            if machine.try_consume(&input, &contained) {
                 found_match = true;
                 break;
             }
