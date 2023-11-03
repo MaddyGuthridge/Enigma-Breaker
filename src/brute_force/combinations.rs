@@ -1,16 +1,19 @@
 use itertools::Itertools;
+use num::iter::Range;
+use strum::IntoEnumIterator;
 
 use crate::{
     letter::Letter,
     machine::{MachineState, ReflectorId},
-    EnigmaMachine, RotorId, message::Message,
+    message::Message,
+    EnigmaMachine, RotorId,
 };
 
 use super::unknown::Unknown;
 
 /// Brute-force by trying all combinations until a match is found
 pub fn force_combinations(
-    num_plugs: u8,
+    num_plugs: Range<usize>,
     rotors: Option<Vec<(Unknown<RotorId>, Unknown<Letter>)>>,
     reflector: Unknown<ReflectorId>,
     input: &Message,
@@ -30,29 +33,45 @@ pub fn force_combinations(
     // Split rotors from their starting positions
     let (rotor_ids, rotor_positions): (Vec<_>, Vec<_>) = rotors.into_iter().unzip();
 
-    // For all possible reflectors
-    for reflect in reflector {
-        // For all possible rotor IDs
-        for rotors in rotor_ids.iter().multi_cartesian_product() {
-            // For all possible positions for each rotor
-            for positions in rotor_positions.iter().multi_cartesian_product() {
-                // Create a machine with the current state
-                let mut machine = EnigmaMachine::from(MachineState::new(
-                    Vec::default(),
-                    rotors.clone(),
-                    positions,
-                    reflect,
-                ));
+    // Generate all possible plug board wires
+    let plugs: Vec<_> = Letter::iter()
+        .combinations(2)
+        .map(|combo| (combo[0], combo[1]))
+        .collect();
 
-                // If it matches
-                if check_machine(
-                    &mut machine,
-                    input,
-                    starting_string,
-                    ending_string,
-                    contained_string,
-                ) {
-                    matches.push(machine.get_starting_state());
+    // For each potential number of plugs
+    for plug_count in num_plugs {
+        // For every possible combination of plugs with that count
+        for plugs in plugs
+            .iter()
+            .combinations(plug_count)
+            .map(|v| v.into_iter().cloned().collect_vec())
+        {
+            // For all possible reflectors
+            for reflect in &reflector {
+                // For all possible rotor IDs
+                for rotors in rotor_ids.iter().multi_cartesian_product() {
+                    // For all possible positions for each rotor
+                    for positions in rotor_positions.iter().multi_cartesian_product() {
+                        // Create a machine with the current state
+                        let mut machine = EnigmaMachine::from(MachineState::new(
+                            plugs.clone(),
+                            rotors.clone(),
+                            positions,
+                            reflect,
+                        ));
+
+                        // If it matches
+                        if check_machine(
+                            &mut machine,
+                            input,
+                            starting_string,
+                            ending_string,
+                            contained_string,
+                        ) {
+                            matches.push(machine.get_starting_state());
+                        }
+                    }
                 }
             }
         }
@@ -80,7 +99,7 @@ fn check_machine(
     contained_string: &Option<Message>,
 ) -> bool {
     if let Some(start) = starting_string {
-        if !machine.try_consume(&input, &start) {
+        if !machine.try_consume(input, start) {
             return false;
         }
         machine.reset();
@@ -88,7 +107,7 @@ fn check_machine(
 
     if let Some(end) = ending_string {
         machine.jump_forwards(input.len() - end.len());
-        if !machine.try_consume(&input, &end) {
+        if !machine.try_consume(input, end) {
             return false;
         }
         machine.reset();
@@ -98,7 +117,7 @@ fn check_machine(
         let mut found_match = false;
         for i in 0..(input.len() - contained.len()) {
             machine.jump_forwards(i);
-            if machine.try_consume(&input, &contained) {
+            if machine.try_consume(input, contained) {
                 found_match = true;
                 break;
             }
