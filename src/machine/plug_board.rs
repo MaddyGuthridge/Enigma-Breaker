@@ -4,6 +4,7 @@ use crate::letter::Letter;
 
 #[derive(Debug)]
 pub struct PlugBoard {
+    // TODO: Use the CharMapping type for better performance
     char_map: BTreeMap<Letter, Letter>,
 }
 
