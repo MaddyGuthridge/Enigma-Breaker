@@ -3,7 +3,7 @@ use std::{io, process::exit};
 use clap::Args;
 use itertools::Itertools;
 
-use lib_enigma::{Letter, Unknown, RotorId, ReflectorId, PlugboardOptions, Message, force_combinations, EnigmaMachine};
+use lib_enigma::{Letter, RotorId, ReflectorId, PlugboardOptions, Message, force_combinations, EnigmaMachine};
 
 #[derive(Args)]
 pub struct ForceArgs {
@@ -64,7 +64,7 @@ pub fn force_main(args: ForceArgs) {
 
     // Parse the rotor options
     // If the options are specified, parse them
-    let rotors: Option<Vec<(Unknown<RotorId>, Unknown<Letter>)>> = if !args.rotor_ids.is_empty() {
+    let rotors: Option<Vec<(Option<RotorId>, Option<Letter>)>> = if !args.rotor_ids.is_empty() {
         Some(
             args.rotor_ids
                 .into_iter()
@@ -72,15 +72,15 @@ pub fn force_main(args: ForceArgs) {
                     // Only rotor ID
                     None => {
                         if r == "!" {
-                            (Unknown::Unknown, Unknown::Unknown)
+                            (None, None)
                         } else {
                             (
-                                Unknown::Known(
+                                Some(
                                     r.as_str()
                                         .try_into()
                                         .unwrap_or_else(|_| panic!("Invalid rotor ID {r:?}")),
                                 ),
-                                Unknown::Unknown,
+                                None,
                             )
                         }
                     }
@@ -89,19 +89,19 @@ pub fn force_main(args: ForceArgs) {
                         assert_eq!(start.len(), 1);
                         let start_letter = start.chars().next().unwrap();
 
-                        let rotor_unknown: Unknown<RotorId> = if id == "!" {
-                            Unknown::Unknown
+                        let rotor_unknown: Option<RotorId> = if id == "!" {
+                            None
                         } else {
-                            Unknown::Known(
+                            Some(
                                 id.try_into()
                                     .unwrap_or_else(|_| panic!("Invalid rotor ID {r:?}")),
                             )
                         };
 
                         let start_unknown = if start_letter == '!' {
-                            Unknown::Unknown
+                            None
                         } else {
-                            Unknown::Known(Letter::from_char(start_letter).unwrap().0)
+                            Some(Letter::from_char(start_letter).unwrap().0)
                         };
 
                         (rotor_unknown, start_unknown)
@@ -115,14 +115,14 @@ pub fn force_main(args: ForceArgs) {
     };
 
     // Also handle the reflector
-    let reflector: Unknown<ReflectorId> = if let Some(id) = args.reflector_id {
+    let reflector: Option<ReflectorId> = if let Some(id) = args.reflector_id {
         if id == "!" {
-            Unknown::Unknown
+            None
         } else {
-            Unknown::Known(id.as_str().try_into().expect("Invalid reflector ID"))
+            Some(id.as_str().try_into().expect("Invalid reflector ID"))
         }
     } else {
-        Unknown::Unknown
+        None
     };
 
     // Parse the plug maps

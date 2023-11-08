@@ -1,5 +1,5 @@
 use criterion::{criterion_group, criterion_main, Criterion};
-use lib_enigma::{EnigmaMachine, Letter, MachineState, ReflectorId, RotorId, Message, force_combinations, PlugboardOptions, Unknown};
+use lib_enigma::{EnigmaMachine, Letter, MachineState, ReflectorId, RotorId, Message, force_combinations, PlugboardOptions};
 
 pub fn bench_brute_force(c: &mut Criterion) {
     c.bench_function("brute force unknown rotors", |b| {
@@ -17,11 +17,11 @@ pub fn bench_brute_force(c: &mut Criterion) {
             force_combinations(
                 PlugboardOptions::KnownConnections(vec![]),
                 Some(vec![
-                    (Unknown::Known(RotorId::I), Unknown::Known(Letter::A)),
-                    (Unknown::Unknown, Unknown::Unknown),
-                    (Unknown::Unknown, Unknown::Unknown),
+                    (Some(RotorId::I), Some(Letter::A)),
+                    (None, None),
+                    (None, None),
                 ]),
-                Unknown::Known(ReflectorId::C),
+                Some(ReflectorId::C),
                 &encoded,
                 &Some(Message::from("Hello".to_string())),
                 &None,
