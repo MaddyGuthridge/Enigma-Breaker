@@ -34,6 +34,9 @@ pub fn iter_possible_states<'a>(
     let mut rotor_pos_iter = rotor_positions.iter().multi_cartesian_product();
     let mut rotor_pos_curr = rotor_pos_iter.next();
 
+    // iter::from_fn is the closest we can get to generators, at least without
+    // changing to Rust Nightly (which sounds scary)
+    // https://stackoverflow.com/a/58683171/6335363
     iter::from_fn(move || {
         // Make everything be not None
 

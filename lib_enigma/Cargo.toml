@@ -17,6 +17,7 @@ itertools = "0.11.0"
 num = "0.4.1"
 num-derive = "0.4.1"
 num-traits = "0.2.17"
+rayon = "1.8.0"
 strum = { version = "0.25.0", features = ["derive"] }
 
 [dev-dependencies]

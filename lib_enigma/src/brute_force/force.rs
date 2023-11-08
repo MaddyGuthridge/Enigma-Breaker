@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use rayon::prelude::*;
 use strum::IntoEnumIterator;
 
 use crate::{
@@ -20,9 +21,6 @@ pub fn force_combinations(
     ending_string: &Option<Message>,
     contained_string: &Option<Message>,
 ) -> Vec<MachineState> {
-    // Vec of matching machine states
-    let mut matches: Vec<MachineState> = Vec::default();
-
     // Change the reflector ID into a vec
     let reflector = if let Some(id) = reflector {
         vec![id]
@@ -88,22 +86,24 @@ pub fn force_combinations(
         ),
     };
 
-    // Loop over every single combination
-    for state in iter_possible_states(plug_combinations, &reflector, &rotor_ids, &rotor_positions) {
-        // Create a machine with the current state
-        let mut machine = EnigmaMachine::from(state);
+    // Iterate over all possible states and filter to states that match the
+    // criteria
+    let matches = iter_possible_states(plug_combinations, &reflector, &rotor_ids, &rotor_positions)
+        .par_bridge()
+        .filter(|state| {
+            // Create a machine with the current state
+            let mut machine = EnigmaMachine::from(state.clone());
 
-        // If it matches
-        if check_machine(
-            &mut machine,
-            input,
-            starting_string,
-            ending_string,
-            contained_string,
-        ) {
-            matches.push(machine.get_starting_state());
-        }
-    }
+            // If it matches
+            check_machine(
+                &mut machine,
+                input,
+                starting_string,
+                ending_string,
+                contained_string,
+            )
+        })
+        .collect_vec();
 
     matches
 }

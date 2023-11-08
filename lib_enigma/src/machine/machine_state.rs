@@ -28,6 +28,8 @@ impl MachineState {
     }
 }
 
+unsafe impl Send for MachineState {}
+
 impl Display for MachineState {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.reflector_id)?;
