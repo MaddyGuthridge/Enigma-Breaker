@@ -58,7 +58,7 @@ impl EnigmaMachine {
     }
 
     fn encipher_char(&mut self, c: &MessageChar) -> MessageChar {
-        if let MessageChar::Alpha(mut letter, capital) = c {
+        let ret = if let MessageChar::Alpha(mut letter, capital) = c {
             // First, tick the rotors
             self.step();
 
@@ -84,31 +84,41 @@ impl EnigmaMachine {
             MessageChar::Alpha(letter, *capital)
         } else {
             c.clone()
-        }
+        };
+        ret
     }
 
-    /// Move the machine forwards by a number of steps
-    pub fn jump_forwards(&mut self, distance: usize) {
-        for _ in 0..distance {
-            self.step();
+    /// Move the machine forwards through a message, as if that message had
+    /// been encoded, but don't actually encode it
+    pub fn jump_forwards(&mut self, skipped_input: &[MessageChar]) {
+        for c in skipped_input {
+            if let MessageChar::Alpha(..) = c {
+                self.step();
+            }
         }
     }
 
     /// Move the machine backwards by a number of steps
-    pub fn jump_backwards(&mut self, distance: usize) {
-        for _ in 0..distance {
-            self.unstep();
+    pub fn jump_backwards(&mut self, skipped_input: &[MessageChar]) {
+        for c in skipped_input {
+            if let MessageChar::Alpha(..) = c {
+                self.unstep();
+            }
         }
     }
 
     /// Reset the machine to its initial state (ie rotors in default positions)
     pub fn reset(&mut self) {
         if self.steps < 0 {
-            self.jump_forwards((-self.steps) as usize)
+            for _ in 0..-self.steps {
+                self.step();
+            }
         } else {
-            self.jump_backwards(self.steps as usize)
+            for _ in 0..self.steps {
+                self.unstep();
+            }
         }
-        self.steps = 0;
+        assert_eq!(self.steps, 0);
     }
 
     /// Encipher a string, returning the result
@@ -119,8 +129,8 @@ impl EnigmaMachine {
     /// Attempt to consume the given input, failing if the input doesn't match
     /// the expected output
     ///
-    /// The machine is reset to its starting state if they don't match, but is
-    /// not reset if the string was consumed successfully
+    /// Note that regardless of the outcome, the machine is not reset to its
+    /// starting state
     pub fn try_consume(&mut self, input: &Message, expected_output: &Message) -> bool {
         let start_steps = self.steps;
 
@@ -136,9 +146,8 @@ impl EnigmaMachine {
         }
 
         for (c_in, c_exp) in input.iter().zip(expected_output.iter()) {
-            if self.encipher_char(c_in) != *c_exp {
-                // Jump back to position before consuming
-                self.jump_backwards((self.steps - start_steps) as usize);
+            let encipher_char = self.encipher_char(c_in);
+            if encipher_char != *c_exp {
                 return false;
             }
         }
@@ -259,8 +268,12 @@ mod tests {
         let mut machine = EnigmaMachine::from(MachineState::from(test_data.clone()));
 
         // Jump forwards then backwards
-        machine.jump_forwards(1000);
-        machine.jump_backwards(1000);
+        for _ in 0..1000 {
+            machine.step();
+        }
+        for _ in 0..1000 {
+            machine.unstep();
+        }
 
         let enciphered = machine.consume(&test_data.input.into());
 

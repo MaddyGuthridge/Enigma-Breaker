@@ -130,8 +130,10 @@ fn check_machine(
     }
 
     if let Some(end) = ending_string {
-        machine.jump_forwards(input.len() - end.len());
-        if !machine.try_consume(input, end) {
+        let skipped_input = &input[..(input.len() - end.len())];
+        let end_input = Message::from_iter(input[(input.len() - end.len())..].to_vec());
+        machine.jump_forwards(skipped_input);
+        if !machine.try_consume(&end_input, end) {
             return false;
         }
         machine.reset();
@@ -140,8 +142,11 @@ fn check_machine(
     if let Some(contained) = contained_string {
         let mut found_match = false;
         for i in 0..(input.len() - contained.len()) {
-            machine.jump_forwards(i);
-            if machine.try_consume(input, contained) {
+            machine.jump_forwards(&input[..i]);
+            // TODO: Currently we copy this vec twice - if we can, try to make
+            // try_consume accept a slice rather than a vec?
+            let input_slice = input[i..(i+contained.len())].to_vec();
+            if machine.try_consume(&Message::from_iter(input_slice), contained) {
                 found_match = true;
                 break;
             }
@@ -165,7 +170,7 @@ mod tests {
     };
 
     #[test]
-    fn brute_force_unknown_rotor_starts() {
+    fn unknown_rotor_starts() {
         // Encode the message
         let state = MachineState::new(
             vec![],
@@ -195,7 +200,7 @@ mod tests {
     }
 
     #[test]
-    fn brute_force_unknown_rotor_ids() {
+    fn unknown_rotor_ids() {
         // Encode the message
         let state = MachineState::new(
             vec![],
@@ -225,7 +230,7 @@ mod tests {
     }
 
     #[test]
-    fn brute_force_unknown_reflector() {
+    fn unknown_reflector() {
         // Encode the message
         let state = MachineState::new(
             vec![],
@@ -255,7 +260,7 @@ mod tests {
     }
 
     #[test]
-    fn brute_force_unknown_plugs() {
+    fn unknown_plugs() {
         // Encode the message
         let state = MachineState::new(
             vec![
@@ -288,5 +293,66 @@ mod tests {
         // all chars in the encoded message, meaning unused chars could be
         // wired in any way, and it wouldn't affect the encoding
         assert!(results.contains(&state));
+    }
+
+    #[test]
+    fn message_end() {
+        // Encode the message
+        let state = MachineState::new(
+            vec![],
+            vec![RotorId::I, RotorId::II, RotorId::III],
+            vec![Letter::A, Letter::B, Letter::C],
+            ReflectorId::C,
+        );
+        let mut machine = EnigmaMachine::from(state.clone());
+
+        let encoded = machine.consume(&Message::from("Hello world".to_string()));
+
+        let results = force_combinations(
+            PlugboardOptions::KnownConnections(vec![]),
+            Some(vec![
+                (Unknown::Known(RotorId::I), Unknown::Unknown),
+                (Unknown::Known(RotorId::II), Unknown::Unknown),
+                (Unknown::Known(RotorId::III), Unknown::Unknown),
+            ]),
+            Unknown::Known(ReflectorId::C),
+            &encoded,
+            &None,
+            &Some(Message::from("world".to_string())),
+            &None,
+        );
+
+        assert_eq!(results, vec![state]);
+    }
+
+    #[test]
+    fn message_contains() {
+        // Encode the message
+        let state = MachineState::new(
+            vec![],
+            vec![RotorId::I, RotorId::II, RotorId::III],
+            vec![Letter::A, Letter::B, Letter::C],
+            ReflectorId::C,
+        );
+        let mut machine = EnigmaMachine::from(state.clone());
+
+        let encoded = machine.consume(&Message::from("Hello world".to_string()));
+
+        let results = force_combinations(
+            // Specify all options to simplify debugging
+            PlugboardOptions::KnownConnections(vec![]),
+            Some(vec![
+                (Unknown::Known(RotorId::I), Unknown::Known(Letter::A)),
+                (Unknown::Known(RotorId::II), Unknown::Known(Letter::B)),
+                (Unknown::Known(RotorId::III), Unknown::Known(Letter::C)),
+            ]),
+            Unknown::Known(ReflectorId::C),
+            &encoded,
+            &None,
+            &None,
+            &Some(Message::from("wor".to_string())),
+        );
+
+        assert_eq!(results, vec![state]);
     }
 }
