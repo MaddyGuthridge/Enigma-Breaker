@@ -151,7 +151,7 @@ impl From<MachineState> for EnigmaMachine {
         let double_step_rotors = 1..state.rotor_ids.len() - 1;
         EnigmaMachine {
             initial_state: state.clone(),
-            plug_board: PlugBoard::new(&state.plug_map),
+            plug_board: PlugBoard::new(&state.plug_map).unwrap(),
             rotors: state
                 .rotor_ids
                 .iter()

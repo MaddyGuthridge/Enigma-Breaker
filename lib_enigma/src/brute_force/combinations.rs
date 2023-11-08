@@ -3,7 +3,7 @@ use strum::IntoEnumIterator;
 
 use crate::{
     letter::Letter,
-    machine::{MachineState, ReflectorId},
+    machine::{MachineState, ReflectorId, PlugBoard},
     message::Message,
     EnigmaMachine, RotorId,
 };
@@ -66,6 +66,12 @@ pub fn force_combinations(
 
     // For every combination of plugs
     for plugs in plug_combinations {
+
+        // If this plug combination is illegal
+        if PlugBoard::new(&plugs).is_none() {
+            continue;
+        }
+
         // For all possible reflectors
         for reflect in &reflector {
             // For all possible rotor IDs
@@ -159,23 +165,24 @@ mod tests {
     };
 
     #[test]
-    fn test_brute_force_letters() {
+    fn brute_force_unknown_rotor_starts() {
         // Encode the message
-        let mut machine = EnigmaMachine::from(MachineState::new(
+        let state = MachineState::new(
             vec![],
             vec![RotorId::I, RotorId::II, RotorId::III],
             vec![Letter::A, Letter::B, Letter::C],
             ReflectorId::C,
-        ));
+        );
+        let mut machine = EnigmaMachine::from(state.clone());
 
         let encoded = machine.consume(&Message::from("Hello world".to_string()));
 
         let results = force_combinations(
             PlugboardOptions::KnownConnections(vec![]),
             Some(vec![
-                (Unknown::Known(RotorId::I), Unknown::Known(Letter::A)),
-                (Unknown::Unknown, Unknown::Unknown),
-                (Unknown::Unknown, Unknown::Unknown),
+                (Unknown::Known(RotorId::I), Unknown::Unknown),
+                (Unknown::Known(RotorId::II), Unknown::Unknown),
+                (Unknown::Known(RotorId::III), Unknown::Unknown),
             ]),
             Unknown::Known(ReflectorId::C),
             &encoded,
@@ -183,5 +190,103 @@ mod tests {
             &None,
             &None,
         );
+
+        assert_eq!(results, vec![state]);
+    }
+
+    #[test]
+    fn brute_force_unknown_rotor_ids() {
+        // Encode the message
+        let state = MachineState::new(
+            vec![],
+            vec![RotorId::I, RotorId::II, RotorId::III],
+            vec![Letter::A, Letter::B, Letter::C],
+            ReflectorId::C,
+        );
+        let mut machine = EnigmaMachine::from(state.clone());
+
+        let encoded = machine.consume(&Message::from("Hello world".to_string()));
+
+        let results = force_combinations(
+            PlugboardOptions::KnownConnections(vec![]),
+            Some(vec![
+                (Unknown::Unknown, Unknown::Known(Letter::A)),
+                (Unknown::Unknown, Unknown::Known(Letter::B)),
+                (Unknown::Unknown, Unknown::Known(Letter::C)),
+            ]),
+            Unknown::Known(ReflectorId::C),
+            &encoded,
+            &Some(Message::from("Hello".to_string())),
+            &None,
+            &None,
+        );
+
+        assert_eq!(results, vec![state]);
+    }
+
+    #[test]
+    fn brute_force_unknown_reflector() {
+        // Encode the message
+        let state = MachineState::new(
+            vec![],
+            vec![RotorId::I, RotorId::II, RotorId::III],
+            vec![Letter::A, Letter::B, Letter::C],
+            ReflectorId::C,
+        );
+        let mut machine = EnigmaMachine::from(state.clone());
+
+        let encoded = machine.consume(&Message::from("Hello world".to_string()));
+
+        let results = force_combinations(
+            PlugboardOptions::KnownConnections(vec![]),
+            Some(vec![
+                (Unknown::Known(RotorId::I), Unknown::Known(Letter::A)),
+                (Unknown::Known(RotorId::II), Unknown::Known(Letter::B)),
+                (Unknown::Known(RotorId::III), Unknown::Known(Letter::C)),
+            ]),
+            Unknown::Unknown,
+            &encoded,
+            &Some(Message::from("Hello".to_string())),
+            &None,
+            &None,
+        );
+
+        assert_eq!(results, vec![state]);
+    }
+
+    #[test]
+    fn brute_force_unknown_plugs() {
+        // Encode the message
+        let state = MachineState::new(
+            vec![
+                (Letter::A, Letter::B),
+                (Letter::C, Letter::D),
+            ],
+            vec![RotorId::I, RotorId::II, RotorId::III],
+            vec![Letter::A, Letter::B, Letter::C],
+            ReflectorId::C,
+        );
+        let mut machine = EnigmaMachine::from(state.clone());
+
+        let encoded = machine.consume(&Message::from("Hello world".to_string()));
+
+        let results = force_combinations(
+            PlugboardOptions::NumberInRangeInclusive(2..=2),
+            Some(vec![
+                (Unknown::Known(RotorId::I), Unknown::Known(Letter::A)),
+                (Unknown::Known(RotorId::II), Unknown::Known(Letter::B)),
+                (Unknown::Known(RotorId::III), Unknown::Known(Letter::C)),
+            ]),
+            Unknown::Known(ReflectorId::C),
+            &encoded,
+            &Some(Message::from("Hello".to_string())),
+            &None,
+            &None,
+        );
+
+        // There are many plug board combinations that work, since we don't use
+        // all chars in the encoded message, meaning unused chars could be
+        // wired in any way, and it wouldn't affect the encoding
+        assert!(results.contains(&state));
     }
 }

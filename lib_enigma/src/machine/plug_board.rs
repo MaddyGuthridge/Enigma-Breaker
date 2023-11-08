@@ -9,7 +9,7 @@ pub struct PlugBoard {
 }
 
 impl PlugBoard {
-    pub fn new(mapping: &Vec<(Letter, Letter)>) -> PlugBoard {
+    pub fn new(mapping: &Vec<(Letter, Letter)>) -> Option<PlugBoard> {
         let expected_map_size = mapping.len() * 2;
 
         let built_map: BTreeMap<_, _> = mapping
@@ -20,11 +20,13 @@ impl PlugBoard {
             .collect();
 
         // Make sure there we got the right number of elements
-        assert_eq!(built_map.len(), expected_map_size);
-
-        PlugBoard {
-            char_map: built_map,
+        if built_map.len() != expected_map_size {
+            return None;
         }
+
+        Some(PlugBoard {
+            char_map: built_map,
+        })
     }
 
     pub fn map_char(&self, c: Letter) -> Letter {
