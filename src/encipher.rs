@@ -1,6 +1,6 @@
 use clap::Args;
 
-use crate::{EnigmaMachine, Letter, MachineState, RotorId};
+use lib_enigma::{EnigmaMachine, Letter, MachineState, RotorId};
 
 #[derive(Args)]
 pub struct EncipherArgs {

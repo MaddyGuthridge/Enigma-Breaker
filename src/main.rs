@@ -1,13 +1,9 @@
-mod brute_force;
-mod letter;
-mod machine;
-mod message;
-mod cli;
+mod encipher;
+mod force;
 
 use clap::{Parser, Subcommand};
-use cli::{EncipherArgs, encipher_main, ForceArgs, force_main};
-use letter::Letter;
-use machine::{EnigmaMachine, MachineState, ReflectorId, RotorId};
+use encipher::{encipher_main, EncipherArgs};
+use force::{ForceArgs, force_main};
 
 #[derive(Subcommand)]
 enum Commands {

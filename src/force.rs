@@ -3,12 +3,7 @@ use std::io;
 use clap::Args;
 use itertools::Itertools;
 
-use crate::{
-    brute_force::{force_combinations, PlugboardOptions, Unknown},
-    machine::EnigmaMachine,
-    message::Message,
-    Letter, ReflectorId, RotorId,
-};
+use lib_enigma::{Letter, Unknown, RotorId, ReflectorId, PlugboardOptions, Message, force_combinations, EnigmaMachine};
 
 #[derive(Args)]
 pub struct ForceArgs {

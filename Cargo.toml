@@ -4,29 +4,11 @@ name = "enigma"
 version = "0.1.0"
 edition = "2021"
 
-[lib]
-name = "enigma"
-path = "src/lib.rs"
-
 [[bin]]
 name = "enigma"
 path = "src/main.rs"
-doc = false
-test = false
-
-[[bench]]
-name = "main"
-harness = false
 
 [dependencies]
-clap = { version = "4.4.6", features = ["derive"] }
 itertools = "0.11.0"
-num = "0.4.1"
-num-derive = "0.4.1"
-num-traits = "0.2.17"
-strum = { version = "0.25.0", features = ["derive"] }
-
-[dev-dependencies]
-criterion = "0.5.1"
-serde = { version = "1.0.189", features = ["derive"] }
-serde_json = "1.0.107"
+clap = { version = "4.4.6", features = ["derive"] }
+lib_enigma = { path = "lib_enigma" }
