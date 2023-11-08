@@ -57,7 +57,7 @@ impl EnigmaMachine {
         self.steps -= 1;
     }
 
-    fn enchipher_char(&mut self, c: &MessageChar) -> MessageChar {
+    fn encipher_char(&mut self, c: &MessageChar) -> MessageChar {
         if let MessageChar::Alpha(mut letter, capital) = c {
             // First, tick the rotors
             self.step();
@@ -113,7 +113,7 @@ impl EnigmaMachine {
 
     /// Encipher a string, returning the result
     pub fn consume(&mut self, input: &Message) -> Message {
-        input.iter().map(|c| self.enchipher_char(c)).collect()
+        input.iter().map(|c| self.encipher_char(c)).collect()
     }
 
     /// Attempt to consume the given input, failing if the input doesn't match
@@ -136,7 +136,7 @@ impl EnigmaMachine {
         }
 
         for (c_in, c_exp) in input.iter().zip(expected_output.iter()) {
-            if self.enchipher_char(c_in) != *c_exp {
+            if self.encipher_char(c_in) != *c_exp {
                 // Jump back to position before consuming
                 self.jump_backwards((self.steps - start_steps) as usize);
                 return false;
