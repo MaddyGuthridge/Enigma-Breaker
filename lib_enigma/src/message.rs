@@ -35,6 +35,8 @@ impl From<MessageChar> for char {
     }
 }
 
+pub type MessageSlice = [MessageChar];
+
 /// Represents a parsed message
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Message(Vec<MessageChar>);

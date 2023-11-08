@@ -130,10 +130,8 @@ fn check_machine(
     }
 
     if let Some(end) = ending_string {
-        let skipped_input = &input[..(input.len() - end.len())];
-        let end_input = Message::from_iter(input[(input.len() - end.len())..].to_vec());
-        machine.jump_forwards(skipped_input);
-        if !machine.try_consume(&end_input, end) {
+        machine.jump_forwards(&input[..(input.len() - end.len())]);
+        if !machine.try_consume(&input[(input.len() - end.len())..], end) {
             return false;
         }
         machine.reset();
@@ -143,10 +141,7 @@ fn check_machine(
         let mut found_match = false;
         for i in 0..(input.len() - contained.len()) {
             machine.jump_forwards(&input[..i]);
-            // TODO: Currently we copy this vec twice - if we can, try to make
-            // try_consume accept a slice rather than a vec?
-            let input_slice = input[i..(i+contained.len())].to_vec();
-            if machine.try_consume(&Message::from_iter(input_slice), contained) {
+            if machine.try_consume(&input[i..(i+contained.len())], contained) {
                 found_match = true;
                 break;
             }

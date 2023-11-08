@@ -1,6 +1,6 @@
 use clap::Args;
 
-use lib_enigma::{EnigmaMachine, Letter, MachineState, RotorId};
+use lib_enigma::{EnigmaMachine, Letter, MachineState, RotorId, Message};
 
 #[derive(Args)]
 pub struct EncipherArgs {
@@ -72,6 +72,6 @@ pub fn encipher_main(args: EncipherArgs) {
     ));
 
     for line in std::io::stdin().lines() {
-        println!("{}", machine.consume(&line.unwrap().into()).to_string());
+        println!("{}", machine.consume(&Message::from(line.unwrap())).to_string());
     }
 }

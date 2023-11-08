@@ -1,5 +1,5 @@
 use crate::{
-    message::{Message, MessageChar},
+    message::{Message, MessageChar, MessageSlice},
     MachineState,
 };
 
@@ -89,7 +89,7 @@ impl EnigmaMachine {
 
     /// Move the machine forwards through a message, as if that message had
     /// been encoded, but don't actually encode it
-    pub fn jump_forwards(&mut self, skipped_input: &[MessageChar]) {
+    pub fn jump_forwards(&mut self, skipped_input: &MessageSlice) {
         for c in skipped_input {
             if let MessageChar::Alpha(..) = c {
                 self.step();
@@ -98,7 +98,7 @@ impl EnigmaMachine {
     }
 
     /// Move the machine backwards by a number of steps
-    pub fn jump_backwards(&mut self, skipped_input: &[MessageChar]) {
+    pub fn jump_backwards(&mut self, skipped_input: &MessageSlice) {
         for c in skipped_input {
             if let MessageChar::Alpha(..) = c {
                 self.unstep();
@@ -121,7 +121,7 @@ impl EnigmaMachine {
     }
 
     /// Encipher a string, returning the result
-    pub fn consume(&mut self, input: &Message) -> Message {
+    pub fn consume(&mut self, input: &MessageSlice) -> Message {
         input.iter().map(|c| self.encipher_char(c)).collect()
     }
 
@@ -130,7 +130,7 @@ impl EnigmaMachine {
     ///
     /// Note that regardless of the outcome, the machine is not reset to its
     /// starting state
-    pub fn try_consume(&mut self, input: &Message, expected_output: &Message) -> bool {
+    pub fn try_consume(&mut self, input: &MessageSlice, expected_output: &MessageSlice) -> bool {
         // Optimisation - if input and expected output contain any letters that
         // are equal, the input is guaranteed not to encipher to the output,
         // since enigma machines never encipher a character to itself
@@ -177,7 +177,7 @@ mod tests {
 
     use serde::Deserialize;
 
-    use crate::Letter;
+    use crate::{Letter, Message};
 
     use super::{super::machine_state::MachineState, EnigmaMachine};
 
@@ -238,7 +238,7 @@ mod tests {
 
         let mut machine = EnigmaMachine::from(MachineState::from(test_data.clone()));
 
-        let enciphered = machine.consume(&test_data.input.into());
+        let enciphered = machine.consume(&Message::from(test_data.input));
 
         assert_eq!(enciphered.to_string(), test_data.expect);
     }
@@ -272,7 +272,7 @@ mod tests {
             machine.unstep();
         }
 
-        let enciphered = machine.consume(&test_data.input.into());
+        let enciphered = machine.consume(&Message::from(test_data.input));
 
         assert_eq!(enciphered.to_string(), test_data.expect);
     }
