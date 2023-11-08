@@ -34,7 +34,7 @@ pub fn force_combinations(
         .map(|combo| (combo[0], combo[1]))
         .collect();
 
-    // Iterator over all possible plug combinations
+    // Generate iterator over all possible plug combinations
     // Since the kind of iterator changes depending on the plug board, we need
     // to Box it or Rust can't determine the size. The simpler solution would
     // be to collect it to a Vec, but given that there are over 150 trillion

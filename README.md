@@ -108,11 +108,11 @@ that the first result is nonsensical.
 * [X] Write algorithm for brute-forcing the output
 * [X] Implement optimisation where letters cannot encode to themselves
 * [X] Add benchmarks to track program performance
+* [ ] Use threading to speed up brute-forcing
+* [ ] Display progress while running brute-force algorithms
+* [ ] Implement an estimated time remaining
 * [ ] Support brute-forcing from a list of possible configurations
 * [ ] Support looking for dictionary words in the output
-* [ ] Display progress while running brute-force algorithms
-* [ ] Use threading to speed up brute-forcing
-* [ ] Implement an estimated time remaining
 * [ ] Make it faster by preventing unnecessary copying of data
 
 ## References
