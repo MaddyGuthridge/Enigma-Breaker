@@ -58,7 +58,7 @@ impl EnigmaMachine {
     }
 
     fn encipher_char(&mut self, c: &MessageChar) -> MessageChar {
-        let ret = if let MessageChar::Alpha(mut letter, capital) = c {
+        if let MessageChar::Alpha(mut letter, capital) = c {
             // First, tick the rotors
             self.step();
 
@@ -84,8 +84,7 @@ impl EnigmaMachine {
             MessageChar::Alpha(letter, *capital)
         } else {
             c.clone()
-        };
-        ret
+        }
     }
 
     /// Move the machine forwards through a message, as if that message had
@@ -132,8 +131,6 @@ impl EnigmaMachine {
     /// Note that regardless of the outcome, the machine is not reset to its
     /// starting state
     pub fn try_consume(&mut self, input: &Message, expected_output: &Message) -> bool {
-        let start_steps = self.steps;
-
         // Optimisation - if input and expected output contain any letters that
         // are equal, the input is guaranteed not to encipher to the output,
         // since enigma machines never encipher a character to itself
