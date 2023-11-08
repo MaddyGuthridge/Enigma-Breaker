@@ -22,12 +22,8 @@ pub fn force_combinations(
 ) -> Vec<MachineState> {
     let mut matches: Vec<MachineState> = Vec::default();
 
-    // Assume 3 unknown rotors if no rotors are specified
-    let rotors = rotors.unwrap_or(vec![
-        (Unknown::Unknown, Unknown::Unknown),
-        (Unknown::Unknown, Unknown::Unknown),
-        (Unknown::Unknown, Unknown::Unknown),
-    ]);
+    // If no rotors are specified, give an empty vec
+    let rotors = rotors.unwrap_or(vec![]);
 
     // Split rotors from their starting positions
     let (rotor_ids, rotor_positions): (Vec<_>, Vec<_>) = rotors.into_iter().unzip();
