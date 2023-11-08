@@ -7,12 +7,12 @@ edition = "2021"
 [lib]
 name = "enigma"
 path = "src/lib.rs"
-test = false
 
 [[bin]]
 name = "enigma"
 path = "src/main.rs"
 doc = false
+test = false
 
 [[bench]]
 name = "main"

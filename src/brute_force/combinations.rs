@@ -148,3 +148,40 @@ fn check_machine(
 
     true
 }
+
+#[cfg(test)]
+mod tests {
+    use super::force_combinations;
+    use crate::brute_force::Unknown;
+    use crate::{
+        EnigmaMachine, Letter, MachineState, Message, PlugboardOptions,
+        ReflectorId, RotorId,
+    };
+
+    #[test]
+    fn test_brute_force_letters() {
+        // Encode the message
+        let mut machine = EnigmaMachine::from(MachineState::new(
+            vec![],
+            vec![RotorId::I, RotorId::II, RotorId::III],
+            vec![Letter::A, Letter::B, Letter::C],
+            ReflectorId::C,
+        ));
+
+        let encoded = machine.consume(&Message::from("Hello world".to_string()));
+
+        let results = force_combinations(
+            PlugboardOptions::KnownConnections(vec![]),
+            Some(vec![
+                (Unknown::Known(RotorId::I), Unknown::Known(Letter::A)),
+                (Unknown::Unknown, Unknown::Unknown),
+                (Unknown::Unknown, Unknown::Unknown),
+            ]),
+            Unknown::Known(ReflectorId::C),
+            &encoded,
+            &Some(Message::from("Hello".to_string())),
+            &None,
+            &None,
+        );
+    }
+}
