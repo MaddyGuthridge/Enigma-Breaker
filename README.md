@@ -29,10 +29,10 @@ For more details, use `cargo run -- --help`
 #### Encoding example
 
 ```txt
-$ cargo run -q -- encipher B -r V:X I:C II:B
+$ cargo run --release -q -- encipher B -r V:X I:C II:B
 Hello, world! This is my super cool Enigma machine, programmed in Rust!
 Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
-$ cargo run -q -- encipher B -r V:X I:C II:B
+$ cargo run --release -q -- encipher B -r V:X I:C II:B
 Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
 Hello, world! This is my super cool Enigma machine, programmed in Rust!
 ```
@@ -83,10 +83,10 @@ Demonstrates enciphering, then brute-forcing a message. The only given
 knowledge of the message is that it starts with the word "Hello".
 
 ```txt
-$ cargo run -q -- encipher B -r V:X I:C II:B
+$ cargo run --release -q -- encipher B -r V:X I:C II:B
 Hello, world! This is my super cool Enigma machine, programmed in Rust!
 Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
-$ cargo run -q -- force ! -r ! ! ! --msg-start Hello
+$ cargo run --release -q -- force ! -r ! ! ! --msg-start Hello
 Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
 Done! Found 2 matches
 1 :: A --rotor-ids III:I V:R III:D
@@ -108,7 +108,7 @@ that the first result is nonsensical.
 * [X] Write algorithm for brute-forcing the output
 * [X] Implement optimisation where letters cannot encode to themselves
 * [X] Add benchmarks to track program performance
-* [ ] Use threading to speed up brute-forcing
+* [X] Use threading to speed up brute-forcing
 * [ ] Display progress while running brute-force algorithms
 * [ ] Implement an estimated time remaining
 * [ ] Support brute-forcing from a list of possible configurations
