@@ -1,4 +1,4 @@
-use std::io;
+use std::{io, process::exit};
 
 use clap::Args;
 use itertools::Itertools;
@@ -47,6 +47,21 @@ pub struct ForceArgs {
 }
 
 pub fn force_main(args: ForceArgs) {
+    // Check that at least one of `msg-start`, `msg-end` and `msg-contains`
+    // is specified
+    let mut found_one = false;
+    for prop in [&args.msg_start, &args.msg_end, &args.msg_contains] {
+        if prop.is_some() {
+            found_one = true;
+            break;
+        }
+    }
+    if !found_one {
+        eprintln!("At least one of --msg-start, --msg-end and --msg-contains must be given");
+        eprintln!("Otherwise, the program cannot rule out any combinations");
+        exit(1);
+    }
+
     // Parse the rotor options
     // If the options are specified, parse them
     let rotors: Option<Vec<(Unknown<RotorId>, Unknown<Letter>)>> = if !args.rotor_ids.is_empty() {

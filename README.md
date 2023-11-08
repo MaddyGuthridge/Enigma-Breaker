@@ -108,8 +108,6 @@ that the first result is nonsensical.
 * [X] Write algorithm for brute-forcing the output
 * [X] Implement optimisation where letters cannot encode to themselves
 * [X] Add benchmarks to track program performance
-* [ ] Error when no known information is given about the text, since that would
-      result in all combinations being valid
 * [ ] Support brute-forcing from a list of possible configurations
 * [ ] Support looking for dictionary words in the output
 * [ ] Display progress while running brute-force algorithms
