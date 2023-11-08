@@ -1,7 +1,7 @@
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::Criterion;
 use enigma::{EnigmaMachine, Letter, MachineState, ReflectorId, RotorId, Message};
 
-fn benchmark(c: &mut Criterion) {
+pub fn bench_encipher(c: &mut Criterion) {
     c.bench_function("encode 1000", |b| {
         let mut machine = EnigmaMachine::from(MachineState::new(
             vec![],
@@ -34,6 +34,3 @@ fn benchmark(c: &mut Criterion) {
         });
     });
 }
-
-criterion_group!(benches, benchmark);
-criterion_main!(benches);
