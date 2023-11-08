@@ -18,7 +18,7 @@ use crate::{machine::PlugBoard, Letter, MachineState, ReflectorId, RotorId};
 /// * `rotor_positions`: vec of starting positions for each rotor - each rotor
 ///   has a starting position represented by a vec of starting positions
 pub fn iter_possible_states<'a>(
-    mut plugs_iter: Box<dyn Iterator<Item = Vec<(Letter, Letter)>>>,
+    mut plugs_iter: Box<dyn Iterator<Item = Vec<(Letter, Letter)>> + Send>,
     reflector: &'a [ReflectorId],
     rotor_ids: &'a [Vec<RotorId>],
     rotor_positions: &'a [Vec<Letter>],

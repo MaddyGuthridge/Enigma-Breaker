@@ -18,6 +18,8 @@ pub enum RotorId {
     V,
 }
 
+unsafe impl Send for RotorId {}
+
 impl RotorId {
     /// Create a rotor in the given state from this rotor ID
     pub fn make_rotor(&self, starting_position: Letter, can_double_step: bool) -> Rotor {
@@ -200,6 +202,8 @@ pub enum ReflectorId {
     B,
     C,
 }
+
+unsafe impl Send for ReflectorId {}
 
 impl ReflectorId {
     pub fn make_reflector(&self) -> Reflector {

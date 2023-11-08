@@ -75,9 +75,8 @@ pub fn force_combinations(
     // Perhaps we could consider this possibility if we were using a machine
     // at least 12 petabytes of RAM, though
     let plug_combinations = match plug_options {
-        PlugboardOptions::KnownConnections(connections) => {
-            Box::new([connections].into_iter()) as Box<dyn Iterator<Item = Vec<(Letter, Letter)>>>
-        }
+        PlugboardOptions::KnownConnections(connections) => Box::new([connections].into_iter())
+            as Box<(dyn Iterator<Item = Vec<(Letter, Letter)>> + Send + 'static)>,
         PlugboardOptions::NumberInRange(range) => Box::new(
             range.flat_map(move |plug_count| plugs.clone().into_iter().combinations(plug_count)),
         ),
@@ -88,7 +87,7 @@ pub fn force_combinations(
 
     // Iterate over all possible states and filter to states that match the
     // criteria
-    let matches = iter_possible_states(plug_combinations, &reflector, &rotor_ids, &rotor_positions)
+    iter_possible_states(plug_combinations, &reflector, &rotor_ids, &rotor_positions)
         .par_bridge()
         .filter(|state| {
             // Create a machine with the current state
@@ -103,9 +102,7 @@ pub fn force_combinations(
                 contained_string,
             )
         })
-        .collect_vec();
-
-    matches
+        .collect()
 }
 
 /// Check to see if the given machine matches the criteria for the decoded
