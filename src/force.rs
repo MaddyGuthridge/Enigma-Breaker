@@ -174,6 +174,8 @@ pub fn force_main(args: ForceArgs) {
 
     let message = Message::from(input);
 
+    println!("begin brute-force decipher...");
+
     let matches = force_combinations(
         plug_options,
         rotors,
