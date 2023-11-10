@@ -13,5 +13,3 @@ pub enum PlugboardOptions {
     /// The number of connections is within the given range
     NumberInRangeInclusive(RangeInclusive<usize>),
 }
-
-unsafe impl Send for PlugboardOptions {}

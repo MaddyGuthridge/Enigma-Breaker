@@ -38,8 +38,6 @@ pub enum Letter {
     Z,
 }
 
-unsafe impl Send for Letter {}
-
 impl Letter {
     /// Create from a usize, which must be in range 0..26
     pub fn from_usize(n: usize) -> Option<Letter> {

@@ -74,9 +74,8 @@ pub fn force_combinations(
     // amount of memory if we try to allocate them all at once.
     // Perhaps we could consider this possibility if we were using a machine
     // at least 12 petabytes of RAM, though
-    let plug_combinations = match plug_options {
-        PlugboardOptions::KnownConnections(connections) => Box::new([connections].into_iter())
-            as Box<(dyn Iterator<Item = Vec<(Letter, Letter)>> + Send + 'static)>,
+    let plug_combinations: Box<(dyn Iterator<Item = Vec<(Letter, Letter)>> + Send)> = match plug_options {
+        PlugboardOptions::KnownConnections(connections) => Box::new([connections].into_iter()),
         PlugboardOptions::NumberInRange(range) => Box::new(
             range.flat_map(move |plug_count| plugs.clone().into_iter().combinations(plug_count)),
         ),
