@@ -3,7 +3,7 @@ mod force;
 
 use clap::{Parser, Subcommand};
 use encipher::{encipher_main, EncipherArgs};
-use force::{ForceArgs, force_main};
+use force::{force_main, ForceArgs};
 
 #[derive(Subcommand)]
 enum Commands {

@@ -40,16 +40,16 @@ Hello, world! This is my super cool Enigma machine, programmed in Rust!
 ### Brute force deciphering
 
 The program behaves similarly to when enciphering. Any unknown values are
-indicated using an `!` character.
+indicated using an `_` (underscore) character.
 
-* For an unknown reflector or rotor, you can simply use `!`.
+* For an unknown reflector or rotor, you can simply use `_`.
 
 * For an known rotor with an unknown starting position, you can just specify
   the rotor. For example, to specify rotor `V` with an unknown position, you
-  can use `V` or `V:!`.
+  can use `V` or `V:_`.
 
 * For an unknown rotor with a known starting position (say `C`), you can use
-  `!:C`.
+  `_:C`.
 
 For the plug board, you should specify a number of plugs that was used. For
 example, to specify 10 plugs, you could use `10`. Ranges are also supported,
@@ -86,7 +86,7 @@ knowledge of the message is that it starts with the word "Hello".
 $ cargo run --release -q -- encipher B -r V:X I:C II:B
 Hello, world! This is my super cool Enigma machine, programmed in Rust!
 Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
-$ cargo run --release -q -- force ! -r ! ! ! --msg-start Hello
+$ cargo run --release -q -- force _ -r _ _ _ --msg-start Hello
 Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
 Done! Found 2 matches
 1 :: A --rotor-ids III:I V:R III:D

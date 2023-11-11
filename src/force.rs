@@ -24,13 +24,13 @@ pub struct ForceArgs {
     /// `id` is the rotor ID (in roman numerals), and `start` is the starting
     /// position of said rotor. `start` defaults to unknown.
     ///
-    /// Unknown values should be set as `"!"`. For example, if the rotor ID is
-    /// unknown, use `"!"`, if the rotor id is unknown but the position is
-    /// known to be A, use "!:A", etc.
+    /// Unknown values should be set as `"_"` (undercore). For example, if the
+    /// rotor ID is unknown, use `"_"`, if the rotor id is unknown but the
+    /// position is known to be A, use "_:A", etc.
     #[clap(short, long, value_parser, num_args = 1.., value_delimiter = ' ')]
     rotor_ids: Vec<String>,
 
-    /// ID of reflector to use, eg `"B"`. Use `"!"` if unknown
+    /// ID of reflector to use, eg `"B"`. Use `"_"` if unknown
     reflector_id: Option<String>,
 
     /// String known to be located at the start of the enciphered message
@@ -71,7 +71,7 @@ pub fn force_main(args: ForceArgs) {
                 .map(|r| match r.split_once(':') {
                     // Only rotor ID
                     None => {
-                        if r == "!" {
+                        if r == "_" {
                             (None, None)
                         } else {
                             (
@@ -89,7 +89,7 @@ pub fn force_main(args: ForceArgs) {
                         assert_eq!(start.len(), 1);
                         let start_letter = start.chars().next().unwrap();
 
-                        let rotor_unknown: Option<RotorId> = if id == "!" {
+                        let rotor_unknown: Option<RotorId> = if id == "_" {
                             None
                         } else {
                             Some(
@@ -98,7 +98,7 @@ pub fn force_main(args: ForceArgs) {
                             )
                         };
 
-                        let start_unknown = if start_letter == '!' {
+                        let start_unknown = if start_letter == '_' {
                             None
                         } else {
                             Some(Letter::from_char(start_letter).unwrap().0)
@@ -116,7 +116,7 @@ pub fn force_main(args: ForceArgs) {
 
     // Also handle the reflector
     let reflector: Option<ReflectorId> = if let Some(id) = args.reflector_id {
-        if id == "!" {
+        if id == "_" {
             None
         } else {
             Some(id.as_str().try_into().expect("Invalid reflector ID"))
@@ -174,7 +174,7 @@ pub fn force_main(args: ForceArgs) {
 
     let message = Message::from(input);
 
-    println!("begin brute-force decipher...");
+    println!("Begin brute-force decipher...");
 
     let matches = force_combinations(
         plug_options,
