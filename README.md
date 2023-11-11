@@ -110,6 +110,13 @@ Observe that given our constraints (message starts with `Hello`), it was able
 to find two matches. Since the program has no concept of words, it is unaware
 that the first result is nonsensical.
 
+## Navigating the repo
+
+* `src` - source code for the `enigma` CLI
+* `lib_enigma` - source code for the library I created for emulating and
+  brute-forcing the enigma machine.
+* [`Report.pdf`](./Report.pdf) - the report I made for COMP6841
+
 ## Todo
 
 * [X] Implement an enigma machine
