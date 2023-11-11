@@ -3,7 +3,9 @@ use std::{io, process::exit};
 use clap::Args;
 use itertools::Itertools;
 
-use lib_enigma::{Letter, RotorId, ReflectorId, PlugboardOptions, Message, force_combinations, EnigmaMachine};
+use lib_enigma::{
+    force_combinations, EnigmaMachine, Letter, Message, PlugboardOptions, ReflectorId, RotorId,
+};
 
 #[derive(Args)]
 pub struct ForceArgs {

@@ -1,10 +1,12 @@
 use std::time::Duration;
 
 use criterion::{criterion_group, criterion_main, Criterion};
-use lib_enigma::{EnigmaMachine, Letter, MachineState, ReflectorId, RotorId, Message, force_combinations, PlugboardOptions};
+use lib_enigma::{
+    force_combinations, EnigmaMachine, Letter, MachineState, Message, PlugboardOptions,
+    ReflectorId, RotorId,
+};
 
 pub fn bench_brute_force(c: &mut Criterion) {
-
     let mut group = c.benchmark_group("brute force");
 
     group.measurement_time(Duration::from_secs(15));
@@ -24,11 +26,7 @@ pub fn bench_brute_force(c: &mut Criterion) {
         b.iter(|| {
             force_combinations(
                 PlugboardOptions::KnownConnections(vec![]),
-                Some(vec![
-                    (None, None),
-                    (None, None),
-                    (None, None),
-                ]),
+                Some(vec![(None, None), (None, None), (None, None)]),
                 Some(ReflectorId::C),
                 &encoded,
                 &Some(Message::from("Hello".to_string())),

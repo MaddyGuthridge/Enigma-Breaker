@@ -1,5 +1,5 @@
 use criterion::Criterion;
-use lib_enigma::{EnigmaMachine, Letter, MachineState, ReflectorId, RotorId, Message};
+use lib_enigma::{EnigmaMachine, Letter, MachineState, Message, ReflectorId, RotorId};
 
 pub fn bench_encipher(c: &mut Criterion) {
     c.bench_function("encode 1000", |b| {

@@ -1,6 +1,6 @@
 use super::{Reflector, Rotor};
 use crate::letter::Letter;
-use strum::{Display, EnumIter, EnumString, IntoStaticStr, EnumCount};
+use strum::{Display, EnumCount, EnumIter, EnumString, IntoStaticStr};
 
 /// ID representing a rotor with a specific configuration
 #[derive(Debug, Clone, Copy, EnumIter, EnumString, IntoStaticStr, Display, PartialEq, Eq)]
