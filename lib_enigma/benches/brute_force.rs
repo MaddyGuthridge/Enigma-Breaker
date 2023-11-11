@@ -12,7 +12,7 @@ pub fn bench_brute_force(c: &mut Criterion) {
     group.measurement_time(Duration::from_secs(15));
     group.sample_size(10);
 
-    group.bench_function("brute force unknown rotors", |b| {
+    group.bench_function("unknown rotors", |b| {
         // Encode the message
         let mut machine = EnigmaMachine::from(MachineState::new(
             vec![],
@@ -30,6 +30,38 @@ pub fn bench_brute_force(c: &mut Criterion) {
                 Some(ReflectorId::C),
                 &encoded,
                 &Some(Message::from("Hello".to_string())),
+                &None,
+                &None,
+            );
+        });
+    });
+
+    group.bench_function("unknown plug board", |b| {
+        // Encode the message
+        let mut machine = EnigmaMachine::from(MachineState::new(
+            vec![
+                (Letter::F, Letter::U),
+                (Letter::T, Letter::A),
+                (Letter::Y, Letter::K),
+            ],
+            vec![RotorId::I, RotorId::II, RotorId::III],
+            vec![Letter::A, Letter::B, Letter::C],
+            ReflectorId::C,
+        ));
+
+        let encoded = machine.consume(&Message::from("Hello world".to_string()));
+
+        b.iter(|| {
+            force_combinations(
+                PlugboardOptions::NumberInRangeInclusive(3..=3),
+                Some(vec![
+                    (Some(RotorId::I), Some(Letter::A)),
+                    (Some(RotorId::II), Some(Letter::B)),
+                    (Some(RotorId::III), Some(Letter::C)),
+                ]),
+                Some(ReflectorId::C),
+                &encoded,
+                &Some(Message::from("Hello world".to_string())),
                 &None,
                 &None,
             );
