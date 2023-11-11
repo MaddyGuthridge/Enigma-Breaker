@@ -63,6 +63,7 @@ pub fn force_combinations(
     // Generate all possible plug board wires
     let plugs: Vec<_> = Letter::iter()
         .combinations(2)
+        // Convert to a tuple
         .map(|combo| (combo[0], combo[1]))
         .collect();
 
