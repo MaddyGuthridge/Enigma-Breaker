@@ -16,7 +16,7 @@ An enigma machine emulation and brute-force breaker, written in Rust.
 
 The program behaves similarly to `cat`.
 
-`cargo run -- encipher <reflector ID> -r [rotor IDs] -p [plug maps]`
+`enigma encipher <reflector ID> -r [rotor IDs] -p [plug maps]`
 
 * Reflector ID is specified as a char (eg `A`)
 
@@ -30,24 +30,24 @@ The program behaves similarly to `cat`.
 
 For example, to use reflector `B`, with rotors `III`, `IV` and `I`, you can run
 
-`cargo run -- encipher B -r III IV I`
+`enigma encipher B -r III IV I`
 
-For more details, use `cargo run -- --help`
+For more details, use `enigma help encipher`
 
 #### Encoding example
 
 ```txt
-$ cargo run --release -q -- encipher B -r V:X I:C II:B
+$ enigma encipher B -r V:X I:C II:B
 Hello, world! This is my super cool Enigma machine, programmed in Rust!
 Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
-$ cargo run --release -q -- encipher B -r V:X I:C II:B
+$ enigma encipher B -r V:X I:C II:B
 Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
 Hello, world! This is my super cool Enigma machine, programmed in Rust!
 ```
 
 ### Brute force deciphering
 
-`cargo run -- force <reflector ID> -r [rotor IDs] -p [plug maps] --msg-[constraints]`
+`enigma force <reflector ID> -r [rotor IDs] -p [plug maps] --msg-[constraints]`
 
 The program behaves similarly to when enciphering. Any unknown values are
 indicated using an `_` (underscore) character.
@@ -93,10 +93,10 @@ Demonstrates enciphering, then brute-forcing a message. The only given
 knowledge of the message is that it starts with the word "Hello".
 
 ```txt
-$ cargo run --release -q -- encipher B -r V:X I:C II:B
+$ enigma encipher B -r V:X I:C II:B
 Hello, world! This is my super cool Enigma machine, programmed in Rust!
 Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
-$ cargo run --release -q -- force _ -r _ _ _ --msg-start Hello
+$ enigma force _ -r _ _ _ --msg-start Hello
 Jtdvt, zndgl! Jrvr cq ik ydkqk qmws Nxxxtx sylgzjn, kmfwdmfwcv gc Iqcx!
 Done! Found 2 matches
 1 :: A --rotor-ids III:I V:R III:D
