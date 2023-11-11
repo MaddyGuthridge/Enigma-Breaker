@@ -2,13 +2,21 @@
 
 An enigma machine emulation and brute-force breaker, written in Rust.
 
+## Installation
+
+1. Install a modern version of [the Rust toolchain](https://rustup.rs/).
+
+2. `git clone` this repository
+
+3. Run `cargo install --path .`
+
 ## Usage
 
 ### Enciphering
 
 The program behaves similarly to `cat`.
 
-`cargo run -- <reflector ID> -r [rotor IDs] -p [plug maps]`
+`cargo run -- encipher <reflector ID> -r [rotor IDs] -p [plug maps]`
 
 * Reflector ID is specified as a char (eg `A`)
 
@@ -38,6 +46,8 @@ Hello, world! This is my super cool Enigma machine, programmed in Rust!
 ```
 
 ### Brute force deciphering
+
+`cargo run -- force <reflector ID> -r [rotor IDs] -p [plug maps] --msg-[constraints]`
 
 The program behaves similarly to when enciphering. Any unknown values are
 indicated using an `_` (underscore) character.
