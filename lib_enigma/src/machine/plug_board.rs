@@ -1,27 +1,25 @@
-use std::collections::BTreeMap;
-
 use crate::letter::Letter;
+
+use super::char_mapping::CharMapping;
 
 #[derive(Debug)]
 pub struct PlugBoard {
     // TODO: Use the CharMapping type for better performance
-    char_map: BTreeMap<Letter, Letter>,
+    char_map: CharMapping,
 }
 
 impl PlugBoard {
-    pub fn new(mapping: &Vec<(Letter, Letter)>) -> Option<PlugBoard> {
-        let expected_map_size = mapping.len() * 2;
+    pub fn new(mapping: &[(Letter, Letter)]) -> Option<PlugBoard> {
+        let mut built_map = CharMapping::default();
 
-        let built_map: BTreeMap<_, _> = mapping
-            .clone()
-            .into_iter()
-            .map(|(a, b)| (b, a))
-            .chain(mapping.clone())
-            .collect();
-
-        // Make sure there we got the right number of elements
-        if built_map.len() != expected_map_size {
-            return None;
+        for (a, b) in mapping
+        {
+            // If the mapping already exists
+            if built_map[*a] != *a || built_map[*b] != *b {
+                return None;
+            }
+            built_map[*a] = *b;
+            built_map[*b] = *a;
         }
 
         Some(PlugBoard {
@@ -30,6 +28,6 @@ impl PlugBoard {
     }
 
     pub fn map_char(&self, c: Letter) -> Letter {
-        *self.char_map.get(&c).unwrap_or(&c)
+        self.char_map[c]
     }
 }

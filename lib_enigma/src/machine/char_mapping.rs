@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use strum::EnumCount;
+use strum::{EnumCount, IntoEnumIterator};
 
 use crate::letter::Letter;
 
@@ -43,7 +43,11 @@ impl<'a> IntoIterator for &'a CharMapping {
 
 impl Default for CharMapping {
     fn default() -> Self {
-        Self([Letter::A; Letter::COUNT])
+        let mut arr = [Letter::A; Letter::COUNT];
+        for l in Letter::iter() {
+            arr[l as usize] = l;
+        }
+        Self(arr)
     }
 }
 
