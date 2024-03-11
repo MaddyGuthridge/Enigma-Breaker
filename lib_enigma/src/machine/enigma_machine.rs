@@ -57,6 +57,15 @@ impl EnigmaMachine {
         self.steps -= 1;
     }
 
+    /// Encipher a character by passing it through the enigma machine
+    ///
+    /// * For alphabetic characters, the rotors are stepped, then the character
+    ///   is passed through the plug board, rotors, then through the
+    ///   reflector, and then is passed back through the rotors and plug board
+    ///   in reverse.
+    ///
+    /// * For other characters, the machine is not stepped, and the character
+    ///   is returned unchanged.
     fn encipher_char(&mut self, c: &MessageChar) -> MessageChar {
         if let MessageChar::Alpha(mut letter, capital) = c {
             // First, tick the rotors
